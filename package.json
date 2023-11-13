@@ -25,7 +25,10 @@
     "checksize": "rollup -c ; cat my-element.bundled.js | gzip -9 | wc -c ; rm my-element.bundled.js"
   },
   "dependencies": {
-    "lit": "^3.0.2"
+    "@lit/context": "^1.0.1",
+    "immer": "^10.0.3",
+    "lit": "^3.0.2",
+    "reflect-metadata": "^0.1.13"
   },
   "devDependencies": {
     "@custom-elements-manifest/analyzer": "^0.9.0",
