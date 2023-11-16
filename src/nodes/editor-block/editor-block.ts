@@ -1,12 +1,13 @@
 import { LitElement, css, html } from 'lit';
 import {consume} from '@lit/context';
-import { customElement, query } from 'lit/decorators.js';
+import { customElement } from 'lit/decorators.js';
 import { editorContext } from '../../editor-context';
 import { Editor } from '../../core/editor';
-import '../../em-bold-token';
 import { literal } from 'lit/static-html.js';
-import { GroupNode, TreeNode } from '../../core/tree';
+import { GroupNode, TreeNode, produceTraverse } from '../../core/tree';
 import { ref, createRef, Ref } from 'lit/directives/ref.js';
+import { findNearestParentAttachedNode } from '../../utils';
+import { TextNode } from '../text';
 
 export interface EditorBlockNode extends GroupNode {
 }
@@ -30,8 +31,26 @@ export class EditorBlockElement extends LitElement {
     onMutation: MutationCallback = (mutations) => {
         for (const mutation of mutations) {
             switch (mutation.type) {
-                case 'characterData':
-                    console.log((mutation.target.parentNode! as any)['node'])
+                case 'characterData': {
+                    const node = findNearestParentAttachedNode(mutation.target as HTMLElement) as TextNode;
+
+                    if (node.text) {
+                        this.editor.do(editor => {
+                            return produceTraverse(editor.state, draft => {
+                                if (draft.id === node.id) {
+                                    (draft as TextNode).text = mutation.target.textContent!;
+                                    return true;
+                                }
+
+                                return false;
+                            });
+                        });
+
+                        console.log(this.editor.state)
+                    } else {
+                        throw new Error(`Node ${node.id} should be TextNode`)
+                    }
+                }
             }
         }
     }
@@ -50,7 +69,9 @@ export class EditorBlockElement extends LitElement {
 
     override render() {
         return html`
-            <div contenteditable autocomplete="off" autofill="off" ${ref(this.editorRef)}>${Array.from(this.children)}</div>
+            <div contenteditable autocomplete="off" autofill="off" ${ref(this.editorRef)}>
+                ${Array.from(this.children)}
+            </div>
             <em-inline-toolbar/>
         `;
     }

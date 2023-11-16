@@ -44,4 +44,9 @@ export class Editor {
         this._history.push(next, command);
         this._state = next;
     }
+
+    execute(command: Command) {
+        const next = command(this);
+        this._state = next;
+    }
 }
