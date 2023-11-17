@@ -1,4 +1,3 @@
-import { GroupNode } from "./core/tree";
 import { createBoldNode } from "./nodes/bold";
 import { createEditorBlockNode } from "./nodes/editor-block/editor-block";
 import { HeaderLevel, createHeaderNode } from "./nodes/header";
@@ -20,18 +19,38 @@ export const testtree: RootNode = createRootNode([
         createBoldNode([
             createItalicNode([
                 createTextNode('bold italic')
-            ])
-        ])
+            ]),
+        ]),
     ]),
 
     createEditorBlockNode([
         createParagraphNode([
             createTextNode('test text'),
             createBoldNode([
+                createTextNode('bold'),
                 createItalicNode([
                     createTextNode('bold italic')
-                ])
-            ])
-        ])
-    ])
+                ]),
+                createTextNode('after'),
+            ]),
+        ]),
+    ]),
+
+    createEditorBlockNode([
+        createParagraphNode([
+            createTextNode('test text'),
+            createBoldNode([
+                createBoldNode([
+                    createBoldNode([
+                        createTextNode('bold'),
+                        createItalicNode([
+                            createTextNode('bold italic')
+                        ]),
+                    ]),
+                    createTextNode('text 2'),
+                ]),
+            ]),
+            createTextNode('text after'),
+        ]),
+    ]),
 ])

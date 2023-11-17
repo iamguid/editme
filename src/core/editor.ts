@@ -1,24 +1,30 @@
 import { Command } from "./command";
 import { History } from "./history";
+import { Selection } from "./selection";
 import { RootNode, createRootNode } from "../nodes/root";
 import { TreeNode } from "./tree";
 
 export class Editor {
     static empty() {
-        return new Editor(createRootNode(), new History());
+        return new Editor(createRootNode(), new Selection(), new History());
     }
 
     static from(root: RootNode) {
-        return new Editor(root, new History());
+        return new Editor(root, new Selection(), new History());
     }
 
     constructor(
         private _state: TreeNode,
+        private _selection: Selection,
         private _history: History,
     ) {}
 
     get state() {
         return this._state;
+    }
+
+    get selection() {
+        return this._selection;
     }
 
     get history() {

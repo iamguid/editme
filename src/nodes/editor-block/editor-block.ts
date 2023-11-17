@@ -4,10 +4,10 @@ import { customElement } from 'lit/decorators.js';
 import { editorContext } from '../../editor-context';
 import { Editor } from '../../core/editor';
 import { literal } from 'lit/static-html.js';
-import { GroupNode, TreeNode, produceTraverse } from '../../core/tree';
+import { GroupNode, TreeNode } from '../../core/tree';
 import { ref, createRef, Ref } from 'lit/directives/ref.js';
-import { findNearestParentAttachedNode } from '../../utils';
-import { TextNode } from '../text';
+import { MutationController } from './mutation-controller';
+import { SelectionController } from './selection-controller';
 
 export interface EditorBlockNode extends GroupNode {
 }
@@ -26,38 +26,14 @@ export class EditorBlockElement extends LitElement {
 
     editorRef: Ref<HTMLDivElement> = createRef();
 
-    observer!: MutationObserver
+    mutationController!: MutationController;
+    selectionController!: SelectionController;
 
-    onMutation: MutationCallback = (mutations) => {
-        for (const mutation of mutations) {
-            switch (mutation.type) {
-                case 'characterData': {
-                    const node = findNearestParentAttachedNode(mutation.target as HTMLElement) as TextNode;
-
-                    if (node.text) {
-                        this.editor.do(editor => {
-                            return produceTraverse(editor.state, draft => {
-                                if (draft.id === node.id) {
-                                    (draft as TextNode).text = mutation.target.textContent!;
-                                    return true;
-                                }
-
-                                return false;
-                            });
-                        });
-
-                        console.log(this.editor.state)
-                    } else {
-                        throw new Error(`Node ${node.id} should be TextNode`)
-                    }
-                }
-            }
-        }
-    }
-
-    override firstUpdated() {
-        this.observer = new MutationObserver(this.onMutation);
-        this.observer.observe(this.editorRef.value!, { attributes: false, characterData: true, childList: true, subtree: true });
+    override connectedCallback(): void {
+        super.connectedCallback();
+        
+        this.mutationController = new MutationController(this, this.editor, this.editorRef);
+        this.selectionController = new SelectionController(this, this.editor);
     }
 
     static override styles = css`

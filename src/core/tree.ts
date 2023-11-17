@@ -22,16 +22,68 @@ export const findById = (node: TreeNode, id: string): TreeNode | null => {
     while (stack.length > 0) {
         const current = stack.pop()!;
 
-        if (current.type === 'group') {
-            stack.push(...current.children)
-        }
-
         if (current.id === id) {
             return current;
+        }
+
+        if (current.type === 'group') {
+            stack.push(...current.children)
         }
     }
 
     return null
+}
+
+export const getPathToNode = (node: TreeNode, id: string): TreeNode[] => {
+    const stack: (TreeNode | null)[] = [node];
+    const path: TreeNode[] = [];
+
+    while (stack.length > 0) {
+        const current = stack.pop()!;
+
+        if (current === null) {
+            path.pop();
+            continue
+        }
+
+        if (current.id === id) {
+            path.push(current)
+            return path
+        }
+
+        if (current.type === 'group') {
+            path.push(current)
+            stack.push(null, ...current.children)
+        }
+    }
+
+    return []
+}
+
+export const findNodesBetween = (tree: TreeNode, nodeA: TreeNode, nodeB: TreeNode): TreeNode[] => {
+    const queue: TreeNode[] = [nodeA];
+    const visited = new Set<string>([nodeA.id]);
+    const distances = new Map<string, number>([[nodeA.id, 0]]);
+    const predecessors = new Map<string, TreeNode>();
+ 
+    while (queue.length > 0) {
+        const n = queue.shift() as GroupNode;
+        for (let c of n.children) {
+            if (visited.has(c.id) == false) {
+                visited.add(c.id);
+                distances.set(c.id, (distances.get(n.id) ?? 0) + 1);
+                predecessors.set(c.id, n);
+                queue.push(c);
+ 
+                if (c == nodeB)
+                    break;
+            }
+        }
+    }
+
+    console.log(distances, predecessors)
+
+    return [];
 }
 
 export const deleteById = (node: TreeNode, id: string): TreeNode => {
