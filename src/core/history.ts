@@ -1,8 +1,8 @@
 import { Command } from './command';
-import { TreeNode } from './tree';
+import { GroupNode, TreeNode } from './tree';
 
 export interface IHistoryItem {
-    state: TreeNode;
+    state: GroupNode;
     command: Command;
 }
 
@@ -26,7 +26,7 @@ export class History {
         return this.history[this.cursor];
     }
 
-    push(state: TreeNode, command: Command) {
+    push(state: GroupNode, command: Command) {
         this.history = this.history.slice(0, this.cursor + 1);
         this.history.push({ state, command });
         this.cursor = this.history.length - 1;

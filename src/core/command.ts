@@ -1,4 +1,4 @@
 import { Editor } from "./editor";
-import { TreeNode } from "./tree";
+import { GroupNode } from "./tree";
 
-export type Command = (editor: Editor) => TreeNode
+export type Command = (editor: Editor) => GroupNode

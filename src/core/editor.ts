@@ -2,7 +2,7 @@ import { Command } from "./command";
 import { History } from "./history";
 import { Selection } from "./selection";
 import { RootNode, createRootNode } from "../nodes/root";
-import { TreeNode } from "./tree";
+import { GroupNode } from "./tree";
 
 export class Editor {
     static empty() {
@@ -14,7 +14,7 @@ export class Editor {
     }
 
     constructor(
-        private _state: TreeNode,
+        private _state: GroupNode,
         private _selection: Selection,
         private _history: History,
     ) {}

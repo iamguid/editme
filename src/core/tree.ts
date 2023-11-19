@@ -34,7 +34,7 @@ export const findById = (node: TreeNode, id: string): TreeNode | null => {
     return null
 }
 
-export const getPathToNode = (node: TreeNode, id: string): TreeNode[] => {
+export const findPathToNode = (node: TreeNode, id: string): TreeNode[] => {
     const stack: (TreeNode | null)[] = [node];
     const path: TreeNode[] = [];
 
@@ -60,33 +60,75 @@ export const getPathToNode = (node: TreeNode, id: string): TreeNode[] => {
     return []
 }
 
-export const findNodesBetween = (tree: TreeNode, nodeA: TreeNode, nodeB: TreeNode): TreeNode[] => {
-    const queue: TreeNode[] = [nodeA];
-    const visited = new Set<string>([nodeA.id]);
-    const distances = new Map<string, number>([[nodeA.id, 0]]);
-    const predecessors = new Map<string, TreeNode>();
- 
-    while (queue.length > 0) {
-        const n = queue.shift() as GroupNode;
-        for (let c of n.children) {
-            if (visited.has(c.id) == false) {
-                visited.add(c.id);
-                distances.set(c.id, (distances.get(n.id) ?? 0) + 1);
-                predecessors.set(c.id, n);
-                queue.push(c);
- 
-                if (c == nodeB)
-                    break;
+export const copyNode = (node: TreeNode): TreeNode => {
+    if (node.type === 'group') {
+        return {
+            ...node,
+            id: crypto.randomUUID(),
+            children: []
+        }
+    } else {
+        return {
+            ...node,
+            id: crypto.randomUUID(),
+        }
+    }
+}
+
+export const deepCopyNode = (node: TreeNode): TreeNode => {
+    const result = copyNode(node);
+
+    if (result.type === 'group' && node.type === 'group') {
+        result.children = node.children.map(deepCopyNode)
+    } else {
+        return result;
+    }
+
+    return result;
+}
+
+export const calculateIndexMap = (node: GroupNode): Map<string, number> => {
+    const result = new Map<string, number>();
+
+    const recursive = (node: TreeNode) => {
+        if (node.type === 'group') {
+            for (let i = 0; i < node.children.length; i++) {
+                const child = node.children[i];
+                result.set(child.id, i)
+
+                recursive(child);
             }
         }
     }
 
-    console.log(distances, predecessors)
+    recursive(node)
 
-    return [];
+    return result;
 }
 
-export const deleteById = (node: TreeNode, id: string): TreeNode => {
+// export const findTokensBetween = (tree: GroupNode, nodeA: TreeNode, nodeB: TreeNode): TreeNode[] => {
+//     const recursiveFlatTokensList = (node: TreeNode): TreeNode[] => {
+//         const result: TreeNode[] = [];
+
+//         if (node.type === 'group') {
+//             for (const child of node.children) {
+//                 result.push(...recursiveFlatTokensList(child))
+//             }
+//         } else {
+//             result.push(node)
+//         }
+
+//         return result;
+//     }
+
+//     const flatTokensList = recursiveFlatTokensList(tree);
+//     const nodeIndexA = flatTokensList.findIndex(node => node.id === nodeA.id);
+//     const nodeIndexB = flatTokensList.findIndex(node => node.id === nodeB.id);
+
+//     return flatTokensList.slice(nodeIndexA + 1, nodeIndexB);
+// }
+
+export const deleteById = (node: GroupNode, id: string): GroupNode => {
     return produceTraverse(node, draft => {
         if (draft.type === 'group') {
             const index = draft.children.findIndex(child => child.id === id)
@@ -102,7 +144,7 @@ export const deleteById = (node: TreeNode, id: string): TreeNode => {
     })
 }
 
-export const insertAfter = (node: TreeNode, id: string, element: TreeNode): TreeNode => {
+export const insertBefore = (node: GroupNode, id: string, element: TreeNode): GroupNode => {
     return produceTraverse(node, draft => {
         if (draft.type === 'group') {
             const index = draft.children.findIndex(child => child.id === id)
@@ -117,7 +159,22 @@ export const insertAfter = (node: TreeNode, id: string, element: TreeNode): Tree
     })
 }
 
-export const moveById = (node: TreeNode, id: string, afterId: string): TreeNode => {
+export const insertAfter = (node: GroupNode, id: string, element: TreeNode): GroupNode => {
+    return produceTraverse(node, draft => {
+        if (draft.type === 'group') {
+            const index = draft.children.findIndex(child => child.id === id)
+
+            if (index > -1) {
+                draft.children.splice(index + 1, 0, element)
+                return true;
+            }
+        }
+
+        return false
+    })
+}
+
+export const moveById = (node: GroupNode, id: string, afterId: string): GroupNode => {
     const nodeToMove = findById(node, id);
 
     if (!nodeToMove) {
@@ -127,7 +184,7 @@ export const moveById = (node: TreeNode, id: string, afterId: string): TreeNode 
     return insertAfter(deleteById(node, id), afterId, nodeToMove);
 }
 
-export const produceTraverse = (node: TreeNode, callback: (element: TreeNode) => boolean) => {
+export const produceTraverse = (node: GroupNode, callback: (element: TreeNode) => boolean) => {
     return produce(node, draft => {
         const stack: TreeNode[] = [draft];
 

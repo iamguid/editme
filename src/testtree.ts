@@ -25,32 +25,24 @@ export const testtree: RootNode = createRootNode([
 
     createEditorBlockNode([
         createParagraphNode([
-            createTextNode('test text'),
+            createTextNode('pre'),
             createBoldNode([
-                createTextNode('bold'),
+                createTextNode('bold1'),
                 createItalicNode([
                     createTextNode('bold italic')
                 ]),
-                createTextNode('after'),
+                createTextNode('bold2'),
             ]),
-        ]),
-    ]),
-
-    createEditorBlockNode([
-        createParagraphNode([
-            createTextNode('test text'),
+            createTextNode('after'),
+            createTextNode('pre'),
             createBoldNode([
-                createBoldNode([
-                    createBoldNode([
-                        createTextNode('bold'),
-                        createItalicNode([
-                            createTextNode('bold italic')
-                        ]),
-                    ]),
-                    createTextNode('text 2'),
+                createTextNode('bold1'),
+                createItalicNode([
+                    createTextNode('bold italic')
                 ]),
+                createTextNode('bold2'),
             ]),
-            createTextNode('text after'),
+            createTextNode('after'),
         ]),
     ]),
 ])
