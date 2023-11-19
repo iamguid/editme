@@ -1,17 +1,17 @@
-import { createLinkNode } from "../nodes/link";
 import { TextNode } from "../nodes/text";
 import { findNearestParentAttachedNode } from "../utils";
-import { GroupNode, TreeNode, calculateIndexMap, deepCopyNode, copyNode, deleteById, findPathToNode, insertAfter, produceTraverse, insertBefore } from "./tree";
+import { GroupNode, TreeNode, deepCopyNode, copyNode, findPathToNode, insertAfter, produceTraverse, insertBefore } from "./tree";
 
 export class Selection {
-    node: Node | null = null;
+    domNode: globalThis.Node | null = null;
+    editmeNode: TreeNode | null = null;
     selection: globalThis.Selection | null = null;
-    range: Range | null = null;
+    range: globalThis.Range | null = null;
 
     get isSomethingSelected(): boolean {
-        return this.node !== null
+        return this.domNode !== null
             && this.range !== null
-            && this.range !== null
+            && this.selection !== null
             && !this.range.collapsed;
     }
 
@@ -31,7 +31,18 @@ export class Selection {
         return findNearestParentAttachedNode(this.range!.endContainer as HTMLElement);
     }
 
+    updateSelection(node: Node) {
+        this.domNode = node;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const selection = this.selection = (node as any).getSelection() as globalThis.Selection;
+        this.range = selection.getRangeAt(0);
+    }
+
     surroundContents(root: GroupNode, group: GroupNode): TreeNode {
+        if (!this.isSomethingSelected) {
+            return root;
+        }
+
         const start = (this.startNode as TextNode);
         const end = (this.endNode as TextNode);
 

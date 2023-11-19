@@ -7,7 +7,6 @@ import { literal } from 'lit/static-html.js';
 import { GroupNode, TreeNode } from '../../core/tree';
 import { ref, createRef, Ref } from 'lit/directives/ref.js';
 import { MutationController } from './mutation-controller';
-import { SelectionController } from './selection-controller';
 
 export interface EditorBlockNode extends GroupNode {
 }
@@ -26,15 +25,7 @@ export class EditorBlockElement extends LitElement {
 
     editorRef: Ref<HTMLDivElement> = createRef();
 
-    mutationController!: MutationController;
-    selectionController!: SelectionController;
-
-    override connectedCallback(): void {
-        super.connectedCallback();
-        
-        this.mutationController = new MutationController(this, this.editor, this.editorRef);
-        this.selectionController = new SelectionController(this, this.editor);
-    }
+    mutationController = new MutationController(this);
 
     static override styles = css`
         div {
@@ -45,10 +36,9 @@ export class EditorBlockElement extends LitElement {
 
     override render() {
         return html`
-            <div contenteditable autocomplete="off" autofill="off" ${ref(this.editorRef)}>
+            <div contenteditable autocomplete="off" autofill="off" spellcheck="true" ${ref(this.editorRef)}>
                 ${Array.from(this.children)}
             </div>
-            <em-inline-toolbar/>
         `;
     }
 
@@ -56,5 +46,3 @@ export class EditorBlockElement extends LitElement {
         return this;
     }
 }
-
-

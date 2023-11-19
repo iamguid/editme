@@ -6,6 +6,8 @@ import { Editor } from './core/editor';
 import { GroupNode, TokenNode, TreeNode } from './core/tree';
 import { testtree } from './testtree';
 import { html } from 'lit/static-html.js';
+import './em-inline-toolbar';
+import { SelectionController } from './nodes/editor-block/selection-controller';
 
 const renderNode = (node: TreeNode): TemplateResult => {
     switch (node.type) {
@@ -27,18 +29,19 @@ const renderToken = (node: TokenNode): TemplateResult => {
 }
 
 @customElement('em-editme')
-class EditmeElement extends LitElement {
+export class EditmeElement extends LitElement {
     @provide({ context: editorContext })
     editor = Editor.from(testtree);
 
     override connectedCallback(): void {
         super.connectedCallback();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (window as any).editor = this.editor;
     }
 
     override render() {
-        return html`${renderNode(this.editor.state)}`;
+        return html`
+            ${renderNode(this.editor.state)}
+            <em-inline-toolbar .selection=${this.editor.selection}/>
+        `;
     }
 }
 

@@ -1,19 +1,14 @@
-import { ReactiveController, ReactiveControllerHost } from "lit";
-import { Editor } from "../../core/editor";
-import { Ref } from "lit/directives/ref";
+import { ReactiveController } from "lit";
 import { findNearestParentAttachedNode } from "../../utils";
 import { TextNode } from "../text";
 import { produceTraverse } from "../../core/tree";
+import { EditorBlockElement } from "./editor-block";
 
 export class MutationController implements ReactiveController {
     observer!: MutationObserver
     isFirstUpdate = true;
 
-    constructor(
-        private host: ReactiveControllerHost,
-        private editor: Editor,
-        private editorElementRef: Ref<HTMLDivElement>
-    ) {
+    constructor(private host: EditorBlockElement) {
         host.addController(this);
     }
 
@@ -24,7 +19,7 @@ export class MutationController implements ReactiveController {
                     const node = findNearestParentAttachedNode(mutation.target as HTMLElement) as TextNode;
 
                     if (node.text) {
-                        this.editor.execute(editor => {
+                        this.host.editor.execute(editor => {
                             return produceTraverse(editor.state, draft => {
                                 if (draft.id === node.id) {
                                     (draft as TextNode).text = mutation.target.textContent!;
@@ -47,7 +42,7 @@ export class MutationController implements ReactiveController {
             this.isFirstUpdate = false;
 
             this.observer = new MutationObserver(this.onMutation);
-            this.observer.observe(this.editorElementRef.value!, { attributes: false, characterData: true, childList: true, subtree: true });
+            this.observer.observe(this.host.editorRef.value!, { attributes: false, characterData: true, childList: true, subtree: true });
         }
     }
 

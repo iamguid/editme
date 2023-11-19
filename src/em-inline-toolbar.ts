@@ -1,8 +1,15 @@
 import { LitElement, css, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
+import { Selection } from './core/selection';
 
 @customElement('em-inline-toolbar')
 export class InlineToolbarElement extends LitElement {
+    @property({
+        type: Object,
+        hasChanged: () => true,
+    })
+    selection!: Selection
+
     static override styles = css`
         div {
             display: block;
@@ -13,7 +20,7 @@ export class InlineToolbarElement extends LitElement {
     override render() {
         return html`
             <div>
-
+                ${this.selection.isSomethingSelected}
             </div>
         `;
     }
