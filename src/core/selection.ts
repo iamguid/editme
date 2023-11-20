@@ -46,7 +46,7 @@ export class Selection extends EventBus<EditorEventBusProtocol> {
         this.emit('selectionChanged', { type: selectionChangedEvent, selection: this });
     }
 
-    surroundContents(root: GroupNode, group: GroupNode): TreeNode {
+    surroundContents(root: GroupNode, group: GroupNode): GroupNode {
         if (!this.isSomethingSelected) {
             return root;
         }

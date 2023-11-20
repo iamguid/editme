@@ -1,5 +1,6 @@
-import { LitElement, PropertyValueMap, css, html, nothing } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { LitElement, css } from 'lit';
+import { html } from 'lit/static-html.js';
+import { customElement } from 'lit/decorators.js';
 import { editorContext } from '../editor-context';
 import { consume } from '@lit/context';
 import { styleMap } from 'lit/directives/style-map.js';

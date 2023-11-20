@@ -1,8 +1,11 @@
 import { customElement, property } from "lit/decorators.js";
+import { consume } from "@lit/context";
 import { GroupNode, TreeNode } from "../core/tree";
-import { LitElement, html } from "lit";
-import { literal } from "lit/static-html.js";
+import { LitElement } from "lit";
+import { literal, html } from "lit/static-html.js";
 import { InlineTool } from "../core/inline-tool";
+import { editorContext } from "../editor-context";
+import { Editor } from "../core/editor";
 
 export interface BoldNode extends GroupNode {
 }
@@ -35,7 +38,15 @@ export const boldInlineTool: InlineTool = {
 
 @customElement('em-bold-tool')
 export class BoldToolElement extends LitElement {
+    @consume({context: editorContext})
+    editor!: Editor;
+
+    onClick = () => {
+        const boldNode = createBoldNode();
+        this.editor.do((editor) => editor.selection.surroundContents(editor.state, boldNode));
+    }
+
     override render() {
-        return html``
+        return html`<button @click=${this.onClick}>B</button>`
     }
 }
