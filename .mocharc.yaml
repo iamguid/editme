@@ -1,0 +1,9 @@
+# https://github.com/mochajs/mocha/blob/master/example/config/.mocharc.yml
+spec: src/**/*.test.ts
+bail: true
+extension: ['ts']
+watch-extensions: ['ts']
+reporter: spec
+require: ts-node/register
+node-option: ["experimental-specifier-resolution=node", "loader=ts-node/esm"]
+timeout: 3000

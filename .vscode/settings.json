@@ -1,0 +1,6 @@
+{
+    "mochaExplorer.esmLoader": true,
+    "mochaExplorer.require": ["source-map-support/register", "ts-node/register"],
+    "mochaExplorer.nodeArgv": ["--experimental-specifier-resolution=node", "--loader=ts-node/esm"],
+    "mochaExplorer.monkeyPatch": false
+}
