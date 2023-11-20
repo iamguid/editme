@@ -3,10 +3,9 @@ import { EditorBlockElement } from "./editor-block";
 
 export class SelectionController implements ReactiveController {
     host: EditorBlockElement;
-    root: Node;
+    root!: ShadowRoot;
 
     constructor(host: EditorBlockElement) {
-        this.root = (host as LitElement).getRootNode()!;
         (this.host = host).addController(this);
     }
 
@@ -15,6 +14,7 @@ export class SelectionController implements ReactiveController {
     }
 
     hostConnected() {
+        this.root = this.host.shadowRoot!;
         this.host.addEventListener('mouseup', this.onSelectionChange);
     }
 

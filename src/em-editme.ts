@@ -6,7 +6,7 @@ import { Editor } from './core/editor';
 import { GroupNode, TokenNode, TreeNode } from './core/tree';
 import { testtree } from './testtree';
 import { html } from 'lit/static-html.js';
-import './em-inline-toolbar';
+import './inline-toolbar/em-inline-toolbar';
 import { SelectionController } from './nodes/editor-block/selection-controller';
 
 const renderNode = (node: TreeNode): TemplateResult => {
@@ -33,14 +33,10 @@ export class EditmeElement extends LitElement {
     @provide({ context: editorContext })
     editor = Editor.from(testtree);
 
-    override connectedCallback(): void {
-        super.connectedCallback();
-    }
-
     override render() {
         return html`
             ${renderNode(this.editor.state)}
-            <em-inline-toolbar .selection=${this.editor.selection}/>
+            <em-inline-toolbar/>
         `;
     }
 }

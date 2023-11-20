@@ -2,6 +2,7 @@ import { customElement, property } from "lit/decorators.js";
 import { GroupNode, TreeNode } from "../core/tree";
 import { LitElement, html } from "lit";
 import { literal } from "lit/static-html.js";
+import { InlineTool } from "../core/inline-tool";
 
 export interface BoldNode extends GroupNode {
 }
@@ -24,5 +25,17 @@ export class BoldNodeElement extends LitElement {
 
     protected createRenderRoot() {
         return this;
+    }
+}
+
+export const boldInlineTool: InlineTool = {
+    id: 'boold-inline-tool',
+    component: literal`em-bold-tool`
+}
+
+@customElement('em-bold-tool')
+export class BoldToolElement extends LitElement {
+    override render() {
+        return html``
     }
 }

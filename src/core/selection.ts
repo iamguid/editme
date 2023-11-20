@@ -1,8 +1,15 @@
 import { TextNode } from "../nodes/text";
 import { findNearestParentAttachedNode } from "../utils";
+import { EventBus, EventBusProtocol } from "./event-bus";
 import { GroupNode, TreeNode, deepCopyNode, copyNode, findPathToNode, insertAfter, produceTraverse, insertBefore } from "./tree";
 
-export class Selection {
+export const selectionChangedEvent = Symbol('selection_changed');
+
+export interface EditorEventBusProtocol extends EventBusProtocol {
+    selectionChanged: { type: typeof selectionChangedEvent, selection: Selection };
+}
+
+export class Selection extends EventBus<EditorEventBusProtocol> {
     domNode: globalThis.Node | null = null;
     editmeNode: TreeNode | null = null;
     selection: globalThis.Selection | null = null;
@@ -36,6 +43,7 @@ export class Selection {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const selection = this.selection = (node as any).getSelection() as globalThis.Selection;
         this.range = selection.getRangeAt(0);
+        this.emit('selectionChanged', { type: selectionChangedEvent, selection: this });
     }
 
     surroundContents(root: GroupNode, group: GroupNode): TreeNode {

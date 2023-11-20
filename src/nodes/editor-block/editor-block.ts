@@ -7,6 +7,7 @@ import { literal } from 'lit/static-html.js';
 import { GroupNode, TreeNode } from '../../core/tree';
 import { ref, createRef, Ref } from 'lit/directives/ref.js';
 import { MutationController } from './mutation-controller';
+import { SelectionController } from './selection-controller';
 
 export interface EditorBlockNode extends GroupNode {
 }
@@ -26,6 +27,7 @@ export class EditorBlockElement extends LitElement {
     editorRef: Ref<HTMLDivElement> = createRef();
 
     mutationController = new MutationController(this);
+    selectionController = new SelectionController(this);
 
     static override styles = css`
         div {
@@ -40,9 +42,5 @@ export class EditorBlockElement extends LitElement {
                 ${Array.from(this.children)}
             </div>
         `;
-    }
-
-    protected createRenderRoot() {
-        return this;
     }
 }
