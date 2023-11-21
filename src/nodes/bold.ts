@@ -6,12 +6,13 @@ import { literal, html } from "lit/static-html.js";
 import { InlineTool } from "../core/inline-tool";
 import { editorContext } from "../editor-context";
 import { Editor } from "../core/editor";
+import { randomUUID } from "../core/utils";
 
 export interface BoldNode extends GroupNode {
 }
 
 export const createBoldNode = (children: TreeNode[] = []): BoldNode => ({
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     type: 'group',
     view: literal`em-bold-node`,
     children

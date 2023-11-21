@@ -2,12 +2,13 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { GroupNode, TreeNode } from "../core/tree"
 import { literal } from "lit/static-html.js";
+import { randomUUID } from "../core/utils";
 
 export interface RootNode extends GroupNode {
 }
 
 export const createRootNode = (children: TreeNode[] = []): RootNode => ({
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     type: 'group',
     view: literal`em-root-node`,
     children,

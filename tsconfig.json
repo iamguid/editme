@@ -111,7 +111,7 @@
         "strict": true
       }
     ],
-    "types": ["mocha"]
+    "types": ["mocha", "node"]
   },
   "include": ["./src/**/*.ts"]
 }

@@ -8,12 +8,13 @@ import { GroupNode, TreeNode } from '../../core/tree';
 import { ref, createRef, Ref } from 'lit/directives/ref.js';
 import { MutationController } from './mutation-controller';
 import { SelectionController } from './selection-controller';
+import { randomUUID } from '../../core/utils';
 
 export interface EditorBlockNode extends GroupNode {
 }
 
 export const createEditorBlockNode = (children: TreeNode[] = []): EditorBlockNode => ({
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     type: 'group',
     view: literal`em-editor-block`,
     children

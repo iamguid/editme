@@ -94,7 +94,6 @@ export class Selection extends EventBus<EditorEventBusProtocol> {
 
         return produceTraverse(rightSliceResult, draft => {
             if (draft.id === commonParent.id) {
-
                 let startPrevIndex = 0;
                 let startIndex = 0;
                 let endIndex = 0;

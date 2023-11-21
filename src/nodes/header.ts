@@ -2,6 +2,7 @@ import { LitElement, html } from "lit";
 import { customElement, property } from "lit/decorators.js";
 import { TokenNode } from "../core/tree";
 import { literal } from "lit/static-html.js";
+import { randomUUID } from "../core/utils";
 
 export enum HeaderLevel {
     H1,
@@ -18,7 +19,7 @@ export interface HeaderNode extends TokenNode {
 }
 
 export const createHeaderNode = (text: string = '', level: HeaderLevel = HeaderLevel.H1): HeaderNode => ({
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     type: 'token',
     view: literal`em-header-node`,
     level,

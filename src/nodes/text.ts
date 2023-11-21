@@ -2,13 +2,14 @@ import { customElement, property } from "lit/decorators.js";
 import { TokenNode } from "../core/tree";
 import { LitElement, html } from "lit";
 import { literal } from "lit/static-html.js";
+import { randomUUID } from "../core/utils";
 
 export interface TextNode extends TokenNode {
     text: string
 }
 
 export const createTextNode = (text: string): TextNode => ({
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     type: 'token',
     view: literal`em-text-node`,
     text

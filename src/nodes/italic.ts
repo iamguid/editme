@@ -2,12 +2,13 @@ import { customElement, property } from "lit/decorators.js";
 import { GroupNode, TreeNode } from "../core/tree";
 import { LitElement, html } from "lit";
 import { literal } from "lit/static-html.js";
+import { randomUUID } from "../core/utils";
 
 export interface ItalicNode extends GroupNode {
 }
 
 export const createItalicNode = (children: TreeNode[] = []): ItalicNode => ({
-    id: crypto.randomUUID(),
+    id: randomUUID(),
     type: 'group',
     view: literal`em-italic-node`,
     children,

@@ -1,5 +1,6 @@
 import { produce } from "immer"
 import { StaticValue } from "lit/static-html.js"
+import { randomUUID } from "./utils"
 
 export interface GroupNode {
     id: string
@@ -64,13 +65,13 @@ export const copyNode = (node: TreeNode): TreeNode => {
     if (node.type === 'group') {
         return {
             ...node,
-            id: crypto.randomUUID(),
+            id: randomUUID(),
             children: []
         }
     } else {
         return {
             ...node,
-            id: crypto.randomUUID(),
+            id: randomUUID(),
         }
     }
 }
