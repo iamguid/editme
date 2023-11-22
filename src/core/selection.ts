@@ -70,6 +70,7 @@ export class Selection extends EventBus<EditorEventBusProtocol> {
             commonParentIndex + 1 < startPath.length
             && commonParentIndex + 1 < endPath.length
             && startPath[commonParentIndex + 1] === endPath[commonParentIndex + 1]
+            && start !== end
         ) {
             commonParentIndex++;
         }
@@ -87,8 +88,8 @@ export class Selection extends EventBus<EditorEventBusProtocol> {
         const { result: rightSliceResult, newNode: rightSliceNewNode } = this.sliceTextNode(
             leftSliceResult,
             commonParent,
-            end,
-            this.range!.endOffset,
+            start === end ? leftSliceNewNode as TextNode : end,
+            start === end ? this.range!.endOffset - this.range!.startOffset : this.range!.endOffset,
             'left'
         );
 
@@ -117,7 +118,13 @@ export class Selection extends EventBus<EditorEventBusProtocol> {
                     i++;
                 }
 
-                const toWrap = (draft as GroupNode).children.splice(startIndex, endIndex - startIndex + 1);
+                if (startIndex > endIndex) {
+                    const tmp = startIndex;
+                    startIndex = endIndex;
+                    endIndex = tmp;
+                }
+
+                const toWrap = (draft as GroupNode).children.splice(startIndex, endIndex - startIndex);
 
                 group.children.push(...toWrap);
 
