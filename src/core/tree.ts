@@ -107,28 +107,6 @@ export const calculateIndexMap = (node: GroupNode): Map<string, number> => {
     return result;
 }
 
-// export const findTokensBetween = (tree: GroupNode, nodeA: TreeNode, nodeB: TreeNode): TreeNode[] => {
-//     const recursiveFlatTokensList = (node: TreeNode): TreeNode[] => {
-//         const result: TreeNode[] = [];
-
-//         if (node.type === 'group') {
-//             for (const child of node.children) {
-//                 result.push(...recursiveFlatTokensList(child))
-//             }
-//         } else {
-//             result.push(node)
-//         }
-
-//         return result;
-//     }
-
-//     const flatTokensList = recursiveFlatTokensList(tree);
-//     const nodeIndexA = flatTokensList.findIndex(node => node.id === nodeA.id);
-//     const nodeIndexB = flatTokensList.findIndex(node => node.id === nodeB.id);
-
-//     return flatTokensList.slice(nodeIndexA + 1, nodeIndexB);
-// }
-
 export const deleteById = (node: GroupNode, id: string): GroupNode => {
     return produceTraverse(node, draft => {
         if (draft.type === 'group') {

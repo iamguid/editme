@@ -95,19 +95,12 @@ export class Selection extends EventBus<EditorEventBusProtocol> {
 
         return produceTraverse(rightSliceResult, draft => {
             if (draft.id === commonParent.id) {
-                let startPrevIndex = 0;
                 let startIndex = 0;
                 let endIndex = 0;
                 let i = 0;
 
                 while (i < (draft as GroupNode).children.length) {
                     if ((draft as GroupNode).children[i].id === leftSliceNewNode!.id) {
-                        startPrevIndex = i - 1
-
-                        if (startPrevIndex < 0) {
-                            startPrevIndex = 0;
-                        }
-
                         startIndex = i;
                     }
 
@@ -124,11 +117,15 @@ export class Selection extends EventBus<EditorEventBusProtocol> {
                     endIndex = tmp;
                 }
 
+                if (start !== end) {
+                    endIndex += 1;
+                }
+
                 const toWrap = (draft as GroupNode).children.splice(startIndex, endIndex - startIndex);
 
                 group.children.push(...toWrap);
 
-                (draft as GroupNode).children.splice(startPrevIndex, 0, group);
+                (draft as GroupNode).children.splice(startIndex, 0, group);
 
                 return true;
             }

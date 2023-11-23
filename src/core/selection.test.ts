@@ -92,17 +92,350 @@ describe("selection", () => {
         })
     })
 
-    it("surroundContents should return correct result (left tree, right text)", () => { })
+    it("surroundContents should return correct result (left tree, right text)", () => {
+        const tree = createRootNode([
+            createBoldNode([
+                createTextNode('CCDD'),
+            ]),
+            createTextNode('AABB'),
+        ])
 
-    it("surroundContents should return correct result (left tree, right tree)", () => { })
+        const bold = tree.children[0] as GroupNode;
+        const textB = bold.children[0] as TextNode;
+        const textA = tree.children[1] as TextNode;
+        const selection = new Selection();
+
+        stub(selection, 'isSomethingSelected').get(() => true);
+        stub(selection, 'startNode').get(() => textB);
+        stub(selection, 'endNode').get(() => textA);
+        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
+
+        const result = selection.surroundContents(tree, createBoldNode());
+
+        expect(result).to.containSubset({
+            type: 'group',
+            children: [
+                {
+                    type: 'group',
+                    children: [
+                        { type: 'token', text: 'CC' },
+                    ],
+                },
+                {
+                    type: 'group',
+                    children: [
+                        {
+                            type: 'group',
+                            children: [
+                                { type: 'token', text: 'DD' },
+                            ],
+                        },
+                        { type: 'token', text: 'AA' },
+                    ],
+                },
+                { type: 'token', text: 'BB' },
+            ]
+        })
+    })
+
+    it("surroundContents should return correct result (left tree, right tree)", () => { 
+        const tree = createRootNode([
+            createBoldNode([
+                createTextNode('AABB'),
+            ]),
+            createBoldNode([
+                createTextNode('CCDD'),
+            ]),
+        ])
+
+        const boldA = tree.children[0] as GroupNode;
+        const boldB = tree.children[1] as GroupNode;
+        const textA = boldA.children[0] as TextNode;
+        const textB = boldB.children[0] as TextNode;
+        const selection = new Selection();
+
+        stub(selection, 'isSomethingSelected').get(() => true);
+        stub(selection, 'startNode').get(() => textA);
+        stub(selection, 'endNode').get(() => textB);
+        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
+
+        const result = selection.surroundContents(tree, createBoldNode());
+
+        expect(result).to.containSubset({
+            type: 'group',
+            children: [
+                {
+                    type: 'group',
+                    children: [
+                        { type: 'token', text: 'AA' },
+                    ],
+                },
+                {
+                    type: 'group',
+                    children: [
+                        {
+                            type: 'group',
+                            children: [
+                                { type: 'token', text: 'BB' },
+                            ],
+                        },
+                        {
+                            type: 'group',
+                            children: [
+                                { type: 'token', text: 'CC' },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    type: 'group',
+                    children: [
+                        { type: 'token', text: 'DD' },
+                    ],
+                },
+            ]
+        })
+    })
     
-    it("surroundContents should return correct result (left text, between text, right text)", () => { })
+    it("surroundContents should return correct result (left text, between text, right text)", () => { 
+        const tree = createRootNode([
+            createTextNode('AABB'),
+            createTextNode('CCDD'),
+            createTextNode('EEFF'),
+        ])
 
-    it("surroundContents should return correct result (left tree, between tree, right tree)", () => { })
+        const textA = tree.children[0] as TextNode;
+        const textB = tree.children[2] as TextNode;
+        const selection = new Selection();
 
-    it("surroundContents should return correct result (left text, between tree, right text)", () => { })
+        stub(selection, 'isSomethingSelected').get(() => true);
+        stub(selection, 'startNode').get(() => textA);
+        stub(selection, 'endNode').get(() => textB);
+        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
 
-    it("surroundContents should return correct result (left tree, between text, right tree)", () => { })
+        const result = selection.surroundContents(tree, createBoldNode());
+
+        expect(result).to.containSubset({
+            type: 'group',
+            children: [
+                { type: 'token', text: 'AA' },
+                {
+                    type: 'group',
+                    children: [
+                        { type: 'token', text: 'BB' },
+                        { type: 'token', text: 'CCDD' },
+                        { type: 'token', text: 'EE' },
+                    ],
+                },
+                { type: 'token', text: 'FF' },
+            ]
+        })
+    })
+
+    it("surroundContents should return correct result (left tree, between tree, right tree)", () => { 
+        const tree = createRootNode([
+            createBoldNode([
+                createTextNode('AABB'),
+            ]),
+            createBoldNode([
+                createTextNode('CCDD'),
+            ]),
+            createBoldNode([
+                createTextNode('EEFF'),
+            ]),
+        ])
+
+        const boldA = tree.children[0] as GroupNode;
+        const boldB = tree.children[2] as GroupNode;
+        const textA = boldA.children[0] as TextNode;
+        const textB = boldB.children[0] as TextNode;
+        const selection = new Selection();
+
+        stub(selection, 'isSomethingSelected').get(() => true);
+        stub(selection, 'startNode').get(() => textA);
+        stub(selection, 'endNode').get(() => textB);
+        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
+
+        const result = selection.surroundContents(tree, createBoldNode());
+
+        expect(result).to.containSubset({
+            type: 'group',
+            children: [
+                {
+                    type: 'group',
+                    children: [
+                        { type: 'token', text: 'AA' },
+                    ],
+                },
+                {
+                    type: 'group',
+                    children: [
+                        {
+                            type: 'group',
+                            children: [
+                                { type: 'token', text: 'BB' },
+                            ],
+                        },
+                        {
+                            type: 'group',
+                            children: [
+                                { type: 'token', text: 'CCDD' },
+                            ],
+                        },
+                        {
+                            type: 'group',
+                            children: [
+                                { type: 'token', text: 'EE' },
+                            ],
+                        },
+                    ],
+                },
+                {
+                    type: 'group',
+                    children: [
+                        { type: 'token', text: 'FF' },
+                    ],
+                },
+            ]
+        })
+    })
+
+    it("surroundContents should return correct result (left text, between tree, right text)", () => { 
+        const tree = createRootNode([
+            createTextNode('AABB'),
+            createBoldNode([
+                createTextNode('CCDD'),
+            ]),
+            createTextNode('EEFF'),
+        ])
+
+        const textA = tree.children[0] as TextNode;
+        const textB = tree.children[2] as TextNode;
+        const selection = new Selection();
+
+        stub(selection, 'isSomethingSelected').get(() => true);
+        stub(selection, 'startNode').get(() => textA);
+        stub(selection, 'endNode').get(() => textB);
+        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
+
+        const result = selection.surroundContents(tree, createBoldNode());
+
+        expect(result).to.containSubset({
+            type: 'group',
+            children: [
+                { type: 'token', text: 'AA' },
+                {
+                    type: 'group',
+                    children: [
+                        { type: 'token', text: 'BB' },
+                        {
+                            type: 'group',
+                            children: [
+                                { type: 'token', text: 'CCDD' },
+                            ],
+                        },
+                        { type: 'token', text: 'EE' },
+                    ],
+                },
+                { type: 'token', text: 'FF' },
+            ]
+        })
+    })
+
+    it("surroundContents should return correct result (left tree, between text, right tree)", () => {
+        const tree = createRootNode([
+            createBoldNode([
+                createTextNode('AABB'),
+            ]),
+            createTextNode('CCDD'),
+            createBoldNode([
+                createTextNode('EEFF'),
+            ]),
+        ])
+
+        const boldA = tree.children[0] as GroupNode;
+        const boldB = tree.children[2] as GroupNode;
+        const textA = boldA.children[0] as TextNode;
+        const textB = boldB.children[0] as TextNode;
+        const selection = new Selection();
+
+        stub(selection, 'isSomethingSelected').get(() => true);
+        stub(selection, 'startNode').get(() => textA);
+        stub(selection, 'endNode').get(() => textB);
+        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
+
+        const result = selection.surroundContents(tree, createBoldNode());
+
+        expect(result).to.containSubset({
+            type: 'group',
+            children: [
+                {
+                    type: 'group',
+                    children: [
+                        { type: 'token', text: 'AA' },
+                    ]
+                },
+                {
+                    type: 'group',
+                    children: [
+                        {
+                            type: 'group',
+                            children: [
+                                { type: 'token', text: 'BB' },
+                            ]
+                        },
+                        { type: 'token', text: 'CCDD' },
+                        {
+                            type: 'group',
+                            children: [
+                                { type: 'token', text: 'EE' },
+                            ]
+                        },
+                    ],
+                },
+                {
+                    type: 'group',
+                    children: [
+                        { type: 'token', text: 'FF' },
+                    ]
+                },
+            ]
+        })
+    })
+
+    it("surroundContents should return correct result (left text, right text, select inside)", () => {
+        const tree = createRootNode([
+            createTextNode('AABB'),
+            createTextNode('CCDD'),
+            createTextNode('EEFF'),
+        ])
+
+        const text = tree.children[1] as TextNode;
+        const selection = new Selection();
+
+        stub(selection, 'isSomethingSelected').get(() => true);
+        stub(selection, 'startNode').get(() => text);
+        stub(selection, 'endNode').get(() => text);
+        stub(selection, 'range').get(() => ({ startOffset: 1, endOffset: 3 }));
+
+        const result = selection.surroundContents(tree, createBoldNode());
+
+        expect(result).to.containSubset({
+            type: 'group',
+            children: [
+                { type: 'token', text: 'AABB' },
+                { type: 'token', text: 'C' },
+                {
+                    type: 'group',
+                    children: [
+                        { type: 'token', text: 'CD' },
+                    ],
+                },
+                { type: 'token', text: 'D' },
+                { type: 'token', text: 'EEFF' },
+            ]
+        })
+    })
     // #endregion
 
     // #region sliceTextNode

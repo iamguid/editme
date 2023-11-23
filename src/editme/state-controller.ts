@@ -1,7 +1,7 @@
 import { ReactiveController } from "lit";
 import { EditmeElement } from "./em-editme";
 
-export class EventsController implements ReactiveController {
+export class StateController implements ReactiveController {
     constructor(private host: EditmeElement) {
         host.addController(this);
     }
