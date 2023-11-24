@@ -1,8 +1,9 @@
-import { customElement, property } from "lit/decorators.js";
+import { literal, html } from "lit/static-html.js";
+import { customElement } from "lit/decorators.js";
+
 import { GroupNode, TreeNode } from "../core/tree";
-import { LitElement, html } from "lit";
-import { literal } from "lit/static-html.js";
 import { randomUUID } from "../core/utils";
+import { GroupNodeLitElement } from "../node-element";
 
 export interface ItalicNode extends GroupNode {
 }
@@ -15,12 +16,9 @@ export const createItalicNode = (children: TreeNode[] = []): ItalicNode => ({
 })
 
 @customElement('em-italic-node')
-export class ItalicNodeElement extends LitElement {
-    @property({ type: Object, attribute: false })
-    node!: ItalicNode;
-
+export class ItalicNodeElement extends GroupNodeLitElement<ItalicNode> {
     override render() {
-        return html`<i>${Array.from(this.children)}</i>`;
+        return html`<i>${this.renderChildren()}</i>`;
     }
 
     protected createRenderRoot() {

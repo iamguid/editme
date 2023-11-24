@@ -1,8 +1,9 @@
-import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
+import { literal, html } from "lit/static-html.js";
+
 import { GroupNode, TreeNode } from "../core/tree";
-import { literal } from "lit/static-html.js";
 import { randomUUID } from "../core/utils";
+import { GroupNodeLitElement } from "../node-element";
 
 export interface ParagraphNode extends GroupNode {
 }
@@ -15,12 +16,9 @@ export const createParagraphNode = (children: TreeNode[] = []): ParagraphNode =>
 })
 
 @customElement('em-paragraph-node')
-export class ParagraphNodeElement extends LitElement {
-    @property({ type: Object, attribute: false })
-    node!: ParagraphNode;
-
+export class ParagraphNodeElement extends GroupNodeLitElement<ParagraphNode> {
     override render() {
-        return html`<p>${Array.from(this.children)}</p>`;
+        return html`<p>${this.renderChildren()}</p>`;
     }
 
     protected createRenderRoot() {

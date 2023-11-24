@@ -1,14 +1,16 @@
-import { LitElement, css, html } from 'lit';
-import {consume} from '@lit/context';
+import { css } from 'lit';
+import { consume } from '@lit/context';
 import { customElement } from 'lit/decorators.js';
+import { literal, html } from 'lit/static-html.js';
+
 import { editorContext } from '../../editor-context';
 import { Editor } from '../../core/editor';
-import { literal } from 'lit/static-html.js';
 import { GroupNode, TreeNode } from '../../core/tree';
 import { ref, createRef, Ref } from 'lit/directives/ref.js';
 import { MutationController } from './mutation-controller';
 import { SelectionController } from './selection-controller';
 import { randomUUID } from '../../core/utils';
+import { GroupNodeLitElement } from '../../node-element';
 
 export interface EditorBlockNode extends GroupNode {
 }
@@ -21,7 +23,7 @@ export const createEditorBlockNode = (children: TreeNode[] = []): EditorBlockNod
 })
 
 @customElement('em-editor-block')
-export class EditorBlockElement extends LitElement {
+export class EditorBlockElement extends GroupNodeLitElement<EditorBlockNode> {
     @consume({context: editorContext})
     editor!: Editor;
 
@@ -39,8 +41,8 @@ export class EditorBlockElement extends LitElement {
 
     override render() {
         return html`
-            <div contenteditable autocomplete="off" autofill="off" spellcheck="true" ${ref(this.editorRef)}>
-                ${Array.from(this.children)}
+            <div contenteditable spellcheck autocomplete="off" autofill="off" ${ref(this.editorRef)}>
+                ${this.renderChildren()}
             </div>
         `;
     }

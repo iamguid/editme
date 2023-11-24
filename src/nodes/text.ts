@@ -3,6 +3,7 @@ import { TokenNode } from "../core/tree";
 import { LitElement, html } from "lit";
 import { literal } from "lit/static-html.js";
 import { randomUUID } from "../core/utils";
+import { TokenNodeLitElement } from "../node-element";
 
 export interface TextNode extends TokenNode {
     text: string
@@ -16,10 +17,7 @@ export const createTextNode = (text: string): TextNode => ({
 })
 
 @customElement('em-text-node')
-export class ItalicNodeElement extends LitElement {
-    @property({ type: Object, attribute: false })
-    node!: TextNode;
-
+export class ItalicNodeElement extends TokenNodeLitElement<TextNode> {
     override render() {
         return html`${this.node.text}`;
     }

@@ -1,8 +1,9 @@
-import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
-import { GroupNode, TreeNode } from "../core/tree"
+import { customElement } from "lit/decorators.js";
 import { literal } from "lit/static-html.js";
+
+import { GroupNode, TreeNode } from "../core/tree"
 import { randomUUID } from "../core/utils";
+import { GroupNodeLitElement } from "../node-element";
 
 export interface RootNode extends GroupNode {
 }
@@ -15,12 +16,9 @@ export const createRootNode = (children: TreeNode[] = []): RootNode => ({
 });
 
 @customElement('em-root-node')
-export class RootNodeElement extends LitElement {
-    @property({ type: Object, attribute: false })
-    node!: RootNode;
-
+export class RootNodeElement extends GroupNodeLitElement<RootNode> {
     override render() {
-        return Array.from(this.children);
+        return this.renderChildren();
     }
 
     protected createRenderRoot() {

@@ -1,8 +1,9 @@
-import { LitElement, html } from "lit";
-import { customElement, property } from "lit/decorators.js";
+import { customElement } from "lit/decorators.js";
+import { literal, html } from "lit/static-html.js";
+
 import { TokenNode } from "../core/tree";
-import { literal } from "lit/static-html.js";
 import { randomUUID } from "../core/utils";
+import { TokenNodeLitElement } from "../node-element";
 
 export enum HeaderLevel {
     H1,
@@ -27,10 +28,7 @@ export const createHeaderNode = (text: string = '', level: HeaderLevel = HeaderL
 })
 
 @customElement('em-header-node')
-export class HeaderNodeElement extends LitElement {
-    @property({ type: Object, attribute: false })
-    node!: HeaderNode;
-
+export class HeaderNodeElement extends TokenNodeLitElement<HeaderNode> {
     renderH1 = () => html`<h1>${this.node.text}</h1>`
     renderH2 = () => html`<h2>${this.node.text}</h2>`
     renderH3 = () => html`<h3>${this.node.text}</h3>`

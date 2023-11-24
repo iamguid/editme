@@ -1,12 +1,14 @@
-import { customElement, property } from "lit/decorators.js";
-import { consume } from "@lit/context";
-import { GroupNode, TreeNode } from "../core/tree";
 import { LitElement } from "lit";
+import { consume } from "@lit/context";
+import { customElement } from "lit/decorators.js";
 import { literal, html } from "lit/static-html.js";
+
+import { GroupNode, TreeNode } from "../core/tree";
 import { InlineTool } from "../core/inline-tool";
 import { editorContext } from "../editor-context";
 import { Editor } from "../core/editor";
 import { randomUUID } from "../core/utils";
+import { GroupNodeLitElement } from "../node-element";
 
 export interface BoldNode extends GroupNode {
 }
@@ -19,12 +21,9 @@ export const createBoldNode = (children: TreeNode[] = []): BoldNode => ({
 })
 
 @customElement('em-bold-node')
-export class BoldNodeElement extends LitElement {
-    @property({ type: Object, attribute: false })
-    node!: BoldNode;
-
+export class BoldNodeElement extends GroupNodeLitElement<BoldNode> {
     override render() {
-        return html`<b>${Array.from(this.children)}</b>`;
+        return html`<b>${this.renderChildren()}</b>`;
     }
 
     protected createRenderRoot() {
