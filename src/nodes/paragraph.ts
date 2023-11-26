@@ -1,9 +1,8 @@
-import { customElement } from "lit/decorators.js";
-import { literal, html } from "lit/static-html.js";
+import { html } from "lit";
 
+import { Template } from "../core/templates";
 import { GroupNode, TreeNode } from "../core/tree";
 import { randomUUID } from "../core/utils";
-import { GroupNodeLitElement } from "../node-element";
 
 export interface ParagraphNode extends GroupNode {
 }
@@ -11,17 +10,10 @@ export interface ParagraphNode extends GroupNode {
 export const createParagraphNode = (children: TreeNode[] = []): ParagraphNode => ({
     id: randomUUID(),
     type: 'group',
-    view: literal`em-paragraph-node`,
+    view: 'paragraph-node',
     children,
 })
 
-@customElement('em-paragraph-node')
-export class ParagraphNodeElement extends GroupNodeLitElement<ParagraphNode> {
-    override render() {
-        return html`<p>${this.renderChildren()}</p>`;
-    }
-
-    protected createRenderRoot() {
-        return this;
-    }
+export const paragraphNodeTemplate: Template<ParagraphNode> = (node, templates) => {
+    return html`<p>${node.children.map(child => templates.render(child.view, child))}</p>`;
 }

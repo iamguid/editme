@@ -5,6 +5,7 @@ import { RootNode, createRootNode } from "../nodes/root";
 import { GroupNode } from "./tree";
 import { EventBus, EventBusProtocol } from "./event-bus";
 import { InlineTool } from "./inline-tool";
+import { Template, Templates } from "./templates";
 
 export const stateChangedEvent = Symbol('state_changed');
 
@@ -14,11 +15,11 @@ export interface EditorEventBusProtocol extends EventBusProtocol {
 
 export class Editor extends EventBus<EditorEventBusProtocol> {
     static empty() {
-        return new Editor(createRootNode(), new Selection(), new History());
+        return new Editor(createRootNode(), new Selection(), new History(), new Templates());
     }
 
     static from(root: RootNode) {
-        return new Editor(root, new Selection(), new History());
+        return new Editor(root, new Selection(), new History(), new Templates());
     }
 
     inlineTools: InlineTool[] = [];
@@ -27,6 +28,7 @@ export class Editor extends EventBus<EditorEventBusProtocol> {
         private _state: GroupNode,
         private _selection: Selection,
         private _history: History,
+        private _templates: Templates,
     ) {
         super();
     }
@@ -43,6 +45,10 @@ export class Editor extends EventBus<EditorEventBusProtocol> {
         return this._history;
     }
 
+    get templates() {
+        return this._templates;
+    }
+
     registerInlineTool(tool: InlineTool) {
         if (this.inlineTools.some(t => t.id === tool.id)) {
             throw new Error(`Inline tool with id ${tool.id} already registered`);
@@ -57,6 +63,15 @@ export class Editor extends EventBus<EditorEventBusProtocol> {
         }
 
         this.inlineTools = this.inlineTools.filter(t => t.id !== id);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    registerTemplate(id: string, template: Template<any>) {
+        this.templates.register(id, template);
+    }
+
+    unregisterTemplate(id: string) {
+        this.templates.unregister(id);
     }
 
     undo() {

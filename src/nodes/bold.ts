@@ -8,7 +8,7 @@ import { InlineTool } from "../core/inline-tool";
 import { editorContext } from "../editor-context";
 import { Editor } from "../core/editor";
 import { randomUUID } from "../core/utils";
-import { GroupNodeLitElement } from "../node-element";
+import { Template } from "../core/templates";
 
 export interface BoldNode extends GroupNode {
 }
@@ -16,19 +16,12 @@ export interface BoldNode extends GroupNode {
 export const createBoldNode = (children: TreeNode[] = []): BoldNode => ({
     id: randomUUID(),
     type: 'group',
-    view: literal`em-bold-node`,
+    view: 'bold-node',
     children
 })
 
-@customElement('em-bold-node')
-export class BoldNodeElement extends GroupNodeLitElement<BoldNode> {
-    override render() {
-        return html`<b>${this.renderChildren()}</b>`;
-    }
-
-    protected createRenderRoot() {
-        return this;
-    }
+export const boldNodeTemplate: Template<BoldNode> = (node, templates) => {
+    return html`<b>${node.children.map(child => templates.render(child.view, child))}</b>`;
 }
 
 export const boldInlineTool: InlineTool = {

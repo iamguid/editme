@@ -1,16 +1,16 @@
-import { css } from 'lit';
+import { LitElement, css } from 'lit';
 import { consume } from '@lit/context';
-import { customElement } from 'lit/decorators.js';
-import { literal, html } from 'lit/static-html.js';
+import { customElement, property } from 'lit/decorators.js';
+import { html } from 'lit/static-html.js';
+import { ref, createRef, Ref } from 'lit/directives/ref.js';
 
 import { editorContext } from '../../editor-context';
 import { Editor } from '../../core/editor';
 import { GroupNode, TreeNode } from '../../core/tree';
-import { ref, createRef, Ref } from 'lit/directives/ref.js';
+import { randomUUID } from '../../core/utils';
+import { Template } from '../../core/templates';
 import { MutationController } from './mutation-controller';
 import { SelectionController } from './selection-controller';
-import { randomUUID } from '../../core/utils';
-import { GroupNodeLitElement } from '../../node-element';
 
 export interface EditorBlockNode extends GroupNode {
 }
@@ -18,14 +18,21 @@ export interface EditorBlockNode extends GroupNode {
 export const createEditorBlockNode = (children: TreeNode[] = []): EditorBlockNode => ({
     id: randomUUID(),
     type: 'group',
-    view: literal`em-editor-block`,
+    view: 'editor-block',
     children
 })
 
+export const editorNodeBlockTemplate: Template<EditorBlockNode> = (node) => {
+    return html`<em-editor-block .node=${node}/>`;
+}
+
 @customElement('em-editor-block')
-export class EditorBlockElement extends GroupNodeLitElement<EditorBlockNode> {
+export class EditorBlockElement extends LitElement {
     @consume({context: editorContext})
     editor!: Editor;
+
+    @property({ attribute: false })
+    node!: EditorBlockNode;
 
     editorRef: Ref<HTMLDivElement> = createRef();
 
@@ -42,7 +49,7 @@ export class EditorBlockElement extends GroupNodeLitElement<EditorBlockNode> {
     override render() {
         return html`
             <div contenteditable spellcheck autocomplete="off" autofill="off" ${ref(this.editorRef)}>
-                ${this.renderChildren()}
+                ${this.node.children.map(child => this.editor.templates.render(child.view, child))}
             </div>
         `;
     }

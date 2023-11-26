@@ -1,9 +1,8 @@
-import { customElement } from "lit/decorators.js";
-import { literal } from "lit/static-html.js";
+import { html } from "lit";
 
 import { GroupNode, TreeNode } from "../core/tree"
 import { randomUUID } from "../core/utils";
-import { GroupNodeLitElement } from "../node-element";
+import { Template } from "../core/templates";
 
 export interface RootNode extends GroupNode {
 }
@@ -11,17 +10,10 @@ export interface RootNode extends GroupNode {
 export const createRootNode = (children: TreeNode[] = []): RootNode => ({
     id: randomUUID(),
     type: 'group',
-    view: literal`em-root-node`,
+    view: 'root-node',
     children,
 });
 
-@customElement('em-root-node')
-export class RootNodeElement extends GroupNodeLitElement<RootNode> {
-    override render() {
-        return this.renderChildren();
-    }
-
-    protected createRenderRoot() {
-        return this;
-    }
+export const rootNodeTemplate: Template<RootNode> = (node, templates) => {
+    return html`<div>${node.children.map(child => templates.render(child.view, child))}</div>`;
 }

@@ -1,9 +1,8 @@
-import { literal, html } from "lit/static-html.js";
-import { customElement } from "lit/decorators.js";
+import { html } from "lit";
 
 import { GroupNode, TreeNode } from "../core/tree";
 import { randomUUID } from "../core/utils";
-import { GroupNodeLitElement } from "../node-element";
+import { Template } from "../core/templates";
 
 export interface ItalicNode extends GroupNode {
 }
@@ -11,17 +10,10 @@ export interface ItalicNode extends GroupNode {
 export const createItalicNode = (children: TreeNode[] = []): ItalicNode => ({
     id: randomUUID(),
     type: 'group',
-    view: literal`em-italic-node`,
+    view: 'italic-node',
     children,
 })
 
-@customElement('em-italic-node')
-export class ItalicNodeElement extends GroupNodeLitElement<ItalicNode> {
-    override render() {
-        return html`<i>${this.renderChildren()}</i>`;
-    }
-
-    protected createRenderRoot() {
-        return this;
-    }
+export const italicNodeTemplate: Template<ItalicNode> = (node, templates) => {
+    return html`<i>${node.children.map(child => templates.render(child.view, child))}</i>`;
 }

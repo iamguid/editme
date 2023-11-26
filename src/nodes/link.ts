@@ -1,9 +1,8 @@
-import { literal, html } from "lit/static-html.js";
-import { customElement } from "lit/decorators.js";
+import { html } from "lit";
 
+import { Template } from "../core/templates";
 import { GroupNode, TreeNode } from "../core/tree";
 import { randomUUID } from "../core/utils";
-import { GroupNodeLitElement } from "../node-element";
 
 export interface LinkNode extends GroupNode {
     link: string
@@ -12,18 +11,11 @@ export interface LinkNode extends GroupNode {
 export const createLinkNode = (link: string, children: TreeNode[] = []): LinkNode => ({
     id: randomUUID(),
     type: 'group',
-    view: literal`em-link-node`,
+    view: 'link-node',
     link,
     children,
 })
 
-@customElement('em-link-node')
-export class LinkNodeElement extends GroupNodeLitElement<LinkNode> {
-    override render() {
-        return html`<a href=${this.node.link}>${this.renderChildren()}</a>`;
-    }
-
-    protected createRenderRoot() {
-        return this;
-    }
+export const linkNodeTemplate: Template<LinkNode> = (node, templates) => {
+    return html`<a href="${node.link}">${node.children.map(child => templates.render(child.view, child))}</a>`;
 }

@@ -1,18 +1,17 @@
 import { produce } from "immer"
-import { StaticValue } from "lit/static-html.js"
 import { randomUUID } from "./utils"
 
 export interface GroupNode {
     id: string
     type: 'group'
-    view: StaticValue
+    view: string
     children: TreeNode[]
 }
 
 export interface TokenNode {
     id: string
     type: 'token'
-    view: StaticValue
+    view: string
 }
 
 export type TreeNode = GroupNode | TokenNode
