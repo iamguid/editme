@@ -15,5 +15,5 @@ export const createRootNode = (children: TreeNode[] = []): RootNode => ({
 });
 
 export const rootNodeTemplate: Template<RootNode> = (node, templates) => {
-    return html`<div>${node.children.map(child => templates.render(child.view, child))}</div>`;
+    return html`<div id=${node.id}>${node.children.map(child => templates.render(child.view, child))}</div>`;
 }

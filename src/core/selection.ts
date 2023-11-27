@@ -1,5 +1,5 @@
 import { TextNode } from "../nodes/text";
-import { findNearestParentAttachedNode } from "../utils";
+import { findNearestParentTreeNode } from "../utils";
 import { EventBus, EventBusProtocol } from "./event-bus";
 import { GroupNode, TreeNode, deepCopyNode, copyNode, findPathToNode, insertAfter, produceTraverse, insertBefore } from "./tree";
 
@@ -22,20 +22,20 @@ export class Selection extends EventBus<EditorEventBusProtocol> {
             && !this.range.collapsed;
     }
 
-    get startNode(): TreeNode | null {
+    startNode(root: TreeNode): TreeNode | null {
         if (!this.isSomethingSelected) {
             return null;
         }
 
-        return findNearestParentAttachedNode(this.range!.startContainer as HTMLElement);
+        return findNearestParentTreeNode(root, this.range!.startContainer as HTMLElement);
     }
 
-    get endNode(): TreeNode | null {
+    endNode(root: TreeNode): TreeNode | null {
         if (!this.isSomethingSelected) {
             return null;
         }
 
-        return findNearestParentAttachedNode(this.range!.endContainer as HTMLElement);
+        return findNearestParentTreeNode(root, this.range!.endContainer as HTMLElement);
     }
 
     updateSelection(node: Node) {
@@ -51,8 +51,8 @@ export class Selection extends EventBus<EditorEventBusProtocol> {
             return root;
         }
 
-        const start = (this.startNode as TextNode);
-        const end = (this.endNode as TextNode);
+        const start = (this.startNode(root) as TextNode);
+        const end = (this.endNode(root) as TextNode);
 
         if (!start.text) {
             throw new Error('startNode is not a TextNode');

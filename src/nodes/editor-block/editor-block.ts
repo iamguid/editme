@@ -1,4 +1,4 @@
-import { LitElement, css } from 'lit';
+import { LitElement, PropertyValueMap, PropertyValues, css, render } from 'lit';
 import { consume } from '@lit/context';
 import { customElement, property } from 'lit/decorators.js';
 import { html } from 'lit/static-html.js';
@@ -11,6 +11,7 @@ import { randomUUID } from '../../core/utils';
 import { Template } from '../../core/templates';
 import { MutationController } from './mutation-controller';
 import { SelectionController } from './selection-controller';
+import { templateAsString } from '../../utils';
 
 export interface EditorBlockNode extends GroupNode {
 }
@@ -39,6 +40,17 @@ export class EditorBlockElement extends LitElement {
     mutationController = new MutationController(this);
     selectionController = new SelectionController(this);
 
+    onBlur = (ev: FocusEvent) => {
+        // Update component only on blur,
+        // because when you update it on each change
+        // it cause issues with caret position
+        this.requestUpdate();
+    };
+
+    get childrenInnerHTML() {
+        return templateAsString(html`${this.node.children.map(child => this.editor.templates.render(child.view, child))}`);
+    }
+
     static override styles = css`
         div {
             display: block;
@@ -46,11 +58,21 @@ export class EditorBlockElement extends LitElement {
         }
     `;
 
+    override updated = (changedProperties: Map<string, any>) => {
+        this.editorRef.value!.innerHTML = this.childrenInnerHTML;
+    }
+
     override render() {
         return html`
-            <div contenteditable spellcheck autocomplete="off" autofill="off" ${ref(this.editorRef)}>
-                ${this.node.children.map(child => this.editor.templates.render(child.view, child))}
-            </div>
+            <div
+                ${ref(this.editorRef)}
+                @blur=${this.onBlur}
+                id=${this.node.id}
+                contenteditable
+                spellcheck
+                autocomplete="off"
+                autofill="off"
+            ></div>
         `;
     }
 }

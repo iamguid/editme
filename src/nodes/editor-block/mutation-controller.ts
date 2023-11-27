@@ -1,5 +1,5 @@
 import { ReactiveController } from "lit";
-import { findNearestParentAttachedNode } from "../../utils";
+import { findNearestParentTreeNode } from "../../utils";
 import { TextNode } from "../text";
 import { produceTraverse } from "../../core/tree";
 import { EditorBlockElement } from "./editor-block";
@@ -16,9 +16,9 @@ export class MutationController implements ReactiveController {
         for (const mutation of mutations) {
             switch (mutation.type) {
                 case 'characterData': {
-                    const node = findNearestParentAttachedNode(mutation.target as HTMLElement) as TextNode;
+                    const node = findNearestParentTreeNode(this.host.editor.state, mutation.target as HTMLElement) as TextNode;
 
-                    if (node.text) {
+                    if (node && typeof node.text === 'string') {
                         this.host.editor.execute(editor => {
                             return produceTraverse(editor.state, draft => {
                                 if (draft.id === node.id) {

@@ -16,5 +16,5 @@ export const createTextNode = (text: string): TextNode => ({
 })
 
 export const textNodeTemplate: Template<TextNode> = (node) => {
-    return html`<span .node=${node}>${node.text}</span>`;
+    return html`<span id=${node.id}>${node.text}</span>`;
 }

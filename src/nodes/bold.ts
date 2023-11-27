@@ -21,7 +21,7 @@ export const createBoldNode = (children: TreeNode[] = []): BoldNode => ({
 })
 
 export const boldNodeTemplate: Template<BoldNode> = (node, templates) => {
-    return html`<b>${node.children.map(child => templates.render(child.view, child))}</b>`;
+    return html`<b id=${node.id}>${node.children.map(child => templates.render(child.view, child))}</b>`;
 }
 
 export const boldInlineTool: InlineTool = {

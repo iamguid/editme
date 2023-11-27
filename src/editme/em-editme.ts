@@ -8,7 +8,6 @@ import { Editor } from '../core/editor';
 import { GroupNode } from '../core/tree';
 import { testtree } from '../testtree';
 import { boldInlineTool, boldNodeTemplate } from '../nodes/bold';
-import { StateController } from './state-controller';
 import { rootNodeTemplate } from '../nodes/root';
 import { headerNodeTemplate } from '../nodes/header';
 import { paragraphNodeTemplate } from '../nodes/paragraph';
@@ -20,8 +19,6 @@ import { editorNodeBlockTemplate } from '../nodes/editor-block/editor-block';
 export class EditmeElement extends LitElement {
     @provide({ context: editorContext })
     editor = Editor.from(testtree);
-
-    eventsController = new StateController(this);
 
     constructor() {
         super();
@@ -47,9 +44,6 @@ export class EditmeElement extends LitElement {
             <em-inline-toolbar/>
         `
     }
-
-    // Hack for force update on state change
-    override shouldUpdate = () => true
 }
 
 declare global {

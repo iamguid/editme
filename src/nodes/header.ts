@@ -27,11 +27,11 @@ export const createHeaderNode = (text: string, level: HeaderLevel = HeaderLevel.
 
 export const headerNodeTemplate: Template<HeaderNode> = (node) => {
     switch (node.level) {
-        case HeaderLevel.H1: return html`<h1>${node.text}</h1>`;
-        case HeaderLevel.H2: return html`<h2>${node.text}</h2>`;
-        case HeaderLevel.H3: return html`<h3>${node.text}</h3>`;
-        case HeaderLevel.H4: return html`<h4>${node.text}</h4>`;
-        case HeaderLevel.H5: return html`<h5>${node.text}</h5>`;
-        case HeaderLevel.H6: return html`<h6>${node.text}</h6>`;
+        case HeaderLevel.H1: return html`<h1 id=${node.id}>${node.text}</h1>`;
+        case HeaderLevel.H2: return html`<h2 id=${node.id}>${node.text}</h2>`;
+        case HeaderLevel.H3: return html`<h3 id=${node.id}>${node.text}</h3>`;
+        case HeaderLevel.H4: return html`<h4 id=${node.id}>${node.text}</h4>`;
+        case HeaderLevel.H5: return html`<h5 id=${node.id}>${node.text}</h5>`;
+        case HeaderLevel.H6: return html`<h6 id=${node.id}>${node.text}</h6>`;
     }
 }
