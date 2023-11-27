@@ -1,4 +1,4 @@
-import { LitElement, PropertyValueMap, PropertyValues, css, render } from 'lit';
+import { LitElement, PropertyValues, css } from 'lit';
 import { consume } from '@lit/context';
 import { customElement, property } from 'lit/decorators.js';
 import { html } from 'lit/static-html.js';
@@ -11,7 +11,7 @@ import { randomUUID } from '../../core/utils';
 import { Template } from '../../core/templates';
 import { MutationController } from './mutation-controller';
 import { SelectionController } from './selection-controller';
-import { templateAsString } from '../../utils';
+import { stringHash, templateAsString } from '../../utils';
 
 export interface EditorBlockNode extends GroupNode {
 }
@@ -40,10 +40,7 @@ export class EditorBlockElement extends LitElement {
     mutationController = new MutationController(this);
     selectionController = new SelectionController(this);
 
-    onBlur = (ev: FocusEvent) => {
-        // Update component only on blur,
-        // because when you update it on each change
-        // it cause issues with caret position
+    onInput = () => {
         this.requestUpdate();
     };
 
@@ -55,10 +52,13 @@ export class EditorBlockElement extends LitElement {
         div {
             display: block;
             width: 100%;
+            white-space: pre-wrap; /* important rule for handle nbsp, see https://stackoverflow.com/a/60804106/19516518 */
         }
     `;
 
-    override updated = (changedProperties: Map<string, any>) => {
+    override updated = () => {
+        // Fix bug with rerendering innerHTML
+        this.mutationController.ignoreNextMutation();
         this.editorRef.value!.innerHTML = this.childrenInnerHTML;
     }
 
@@ -66,13 +66,20 @@ export class EditorBlockElement extends LitElement {
         return html`
             <div
                 ${ref(this.editorRef)}
-                @blur=${this.onBlur}
-                id=${this.node.id}
+                @input=${this.onInput}
+                {this.node.id}
                 contenteditable
                 spellcheck
                 autocomplete="off"
                 autofill="off"
             ></div>
         `;
+    }
+
+    protected override shouldUpdate(): boolean {
+        const currentHash = stringHash(this.editorRef.value?.innerHTML ?? '');
+        const nextHash = stringHash(this.childrenInnerHTML);
+
+        return currentHash !== nextHash;
     }
 }

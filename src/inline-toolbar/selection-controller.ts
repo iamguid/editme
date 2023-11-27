@@ -1,4 +1,4 @@
-import { LitElement, ReactiveController, ReactiveControllerHost } from "lit";
+import { ReactiveController } from "lit";
 import { InlineToolbarElement } from "./em-inline-toolbar";
 
 export class SelectionController implements ReactiveController {

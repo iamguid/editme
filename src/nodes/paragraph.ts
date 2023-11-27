@@ -15,5 +15,5 @@ export const createParagraphNode = (children: TreeNode[] = []): ParagraphNode =>
 })
 
 export const paragraphNodeTemplate: Template<ParagraphNode> = (node, templates) => {
-    return html`<p id=${node.id}>${node.children.map(child => templates.render(child.view, child))}</p>`;
+    return html`<p id="${node.id}">${node.children.map(child => templates.render(child.view, child))}</p>`;
 }

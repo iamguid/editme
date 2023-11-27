@@ -15,5 +15,5 @@ export const createItalicNode = (children: TreeNode[] = []): ItalicNode => ({
 })
 
 export const italicNodeTemplate: Template<ItalicNode> = (node, templates) => {
-    return html`<i id=${node.id}>${node.children.map(child => templates.render(child.view, child))}</i>`;
+    return html`<i id="${node.id}">${node.children.map(child => templates.render(child.view, child))}</i>`;
 }

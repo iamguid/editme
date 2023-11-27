@@ -14,11 +14,15 @@ import { paragraphNodeTemplate } from '../nodes/paragraph';
 import { textNodeTemplate } from '../nodes/text';
 import { italicNodeTemplate } from '../nodes/italic';
 import { editorNodeBlockTemplate } from '../nodes/editor-block/editor-block';
+import { StateController } from './state-controller';
+import '../inline-toolbar/em-inline-toolbar';
 
 @customElement('em-editme')
 export class EditmeElement extends LitElement {
     @provide({ context: editorContext })
     editor = Editor.from(testtree);
+
+    stateController = new StateController(this);
 
     constructor() {
         super();

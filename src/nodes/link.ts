@@ -17,5 +17,5 @@ export const createLinkNode = (link: string, children: TreeNode[] = []): LinkNod
 })
 
 export const linkNodeTemplate: Template<LinkNode> = (node, templates) => {
-    return html`<a id=${node.id} href="${node.link}">${node.children.map(child => templates.render(child.view, child))}</a>`;
+    return html`<a id="${node.id}" href="${node.link}">${node.children.map(child => templates.render(child.view, child))}</a>`;
 }
