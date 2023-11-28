@@ -72,7 +72,7 @@ export class InlineToolbarElement extends LitElement {
                 style=${styleMap({left: this.toolbarX, top: this.toolbarY})}
                 ${ref(this.containerRef)}
             >
-                ${this.editor.inlineTools.map(tool => html`<${tool.component}/>`)}
+                ${this.editor.tools.map(tool => html`<${tool.component}/>`)}
             </div>
         `;
     }

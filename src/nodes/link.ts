@@ -11,11 +11,11 @@ export interface LinkNode extends GroupNode {
 export const createLinkNode = (link: string, children: TreeNode[] = []): LinkNode => ({
     id: randomUUID(),
     type: 'group',
-    view: 'link-node',
+    kind: 'link-node',
     link,
     children,
 })
 
-export const linkNodeTemplate: Template<LinkNode> = (node, templates) => {
-    return html`<a id="${node.id}" href="${node.link}">${node.children.map(child => templates.render(child.view, child))}</a>`;
+export const linkNodeTemplate: Template<LinkNode> = (node, render) => {
+    return html`<a id="${node.id}" href="${node.link}">${node.children.map(child => render(child))}</a>`;
 }

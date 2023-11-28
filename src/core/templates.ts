@@ -1,28 +1,28 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { TemplateResult } from "lit";
 import { TreeNode } from "./tree";
+import { AbstractModule } from "./module";
+import { EventBusProtocol } from "./event-bus";
 
-export type Template<TTreeNode extends TreeNode> = (node: TTreeNode, templates: Templates) => TemplateResult | Element | Text;
+export type Template<TTreeNode extends TreeNode> = (node: TTreeNode, render: (node: TreeNode) => TemplateResult | Element | Text) => TemplateResult | Element | Text;
 
-export class Templates {
-    private templates = new Map<string, Template<any>>();
+export class TemplatesModule extends AbstractModule<EventBusProtocol> {
+    private templates = new Map<string, Template<TreeNode>>();
 
-    register(id: string, template: Template<any>) {
-        this.templates.set(id, template);
+    register<TTreeNode extends TreeNode>(kind: string, template: Template<TTreeNode>) {
+        this.templates.set(kind, template as never);
     }
 
-    unregister(id: string) {
-        this.templates.delete(id);
+    unregister(kind: string) {
+        this.templates.delete(kind);
     }
 
-    render(id: string, node: TreeNode): TemplateResult | Element | Text {
-        const template = this.templates.get(id);
+    render<TTreeNode extends TreeNode>(node: TTreeNode): TemplateResult | Element | Text {
+        const template = this.templates.get(node.kind);
 
         if (!template) {
-            throw new Error(`Template with id ${id} not found`);
+            throw new Error(`Template with id ${node.kind} not found`);
         }
 
-        return template(node, this);
+        return template(node, this.render.bind(this));
     }
 }

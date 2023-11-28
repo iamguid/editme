@@ -1,8 +1,8 @@
 import { ReactiveController } from "lit";
-import { findNearestParentTreeNode } from "../../utils";
 import { TextNode } from "../text";
-import { deleteById, produceTraverse } from "../../core/tree";
+import { produceTraverse } from "../../core/tree";
 import { EditorBlockElement } from "./editor-block";
+import { findNearestParentTreeNode } from "../../core/utils";
 
 export class MutationController implements ReactiveController {
     observer!: MutationObserver
@@ -26,12 +26,12 @@ export class MutationController implements ReactiveController {
         for (const mutation of mutations) {
             switch (mutation.type) {
                 case 'characterData': {
-                    const node = findNearestParentTreeNode(this.host.editor.state, mutation.target as HTMLElement) as TextNode;
+                    const parent = findNearestParentTreeNode(this.host.editor.state, mutation.target as HTMLElement) as TextNode;
 
-                    if (node && typeof node.text === 'string') {
+                    if (parent && typeof parent.text === 'string') {
                         this.host.editor.execute(editor => {
                             return produceTraverse(editor.state, draft => {
-                                if (draft.id === node.id) {
+                                if (draft.id === parent.id) {
                                     (draft as TextNode).text = mutation.target.textContent!;
                                     return true;
                                 }
@@ -40,17 +40,7 @@ export class MutationController implements ReactiveController {
                             });
                         });
                     } else {
-                        throw new Error(`Node ${node.id} should be TextNode`)
-                    }
-                    break;
-                }
-                case 'childList': {
-                    for (const nodeToRemove of mutation.removedNodes) {
-                        const id = ((nodeToRemove as HTMLElement)?.id)
-
-                        if (typeof id === 'string') {
-                            this.host.editor.do(editor => deleteById(editor.state, id))
-                        }
+                        throw new Error(`Node ${parent.id} should be TextNode`)
                     }
                     break;
                 }

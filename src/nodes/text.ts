@@ -11,7 +11,7 @@ export interface TextNode extends TokenNode {
 export const createTextNode = (text: string): TextNode => ({
     id: randomUUID(),
     type: 'token',
-    view: 'text-node',
+    kind: 'text-node',
     text
 })
 

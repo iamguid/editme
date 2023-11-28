@@ -1,17 +1,18 @@
 import { produce } from "immer"
 import { randomUUID } from "./utils"
+import { TextNode } from "../nodes/text"
 
 export interface GroupNode {
     id: string
+    kind: string
     type: 'group'
-    view: string
     children: TreeNode[]
 }
 
 export interface TokenNode {
     id: string
+    kind: string
     type: 'token'
-    view: string
 }
 
 export type TreeNode = GroupNode | TokenNode
@@ -160,6 +161,154 @@ export const moveById = (node: GroupNode, id: string, afterId: string): GroupNod
     }
 
     return insertAfter(deleteById(node, id), afterId, nodeToMove);
+}
+
+export const surround = (root: GroupNode, startNode: TextNode, endNode: TextNode, startOffset: number, endOffset: number, group: GroupNode): GroupNode => {
+    const startPath = findPathToNode(root, startNode.id);
+    const endPath = findPathToNode(root, endNode.id);
+
+    let commonParentIndex = 0;
+    while (
+        commonParentIndex + 1 < startPath.length
+        && commonParentIndex + 1 < endPath.length
+        && startPath[commonParentIndex + 1] === endPath[commonParentIndex + 1]
+        && startNode !== endNode
+    ) {
+        commonParentIndex++;
+    }
+
+    const commonParent = startPath[commonParentIndex] as GroupNode;
+
+    const { result: leftSliceResult, newNode: leftSliceNewNode } = sliceByTextNode(
+        root,
+        commonParent,
+        startNode,
+        startOffset,
+        'right'
+    );
+
+    const { result: rightSliceResult, newNode: rightSliceNewNode } = sliceByTextNode(
+        leftSliceResult,
+        commonParent,
+        startNode === endNode ? leftSliceNewNode as TextNode : endNode,
+        startNode === endNode ? endOffset - startOffset : endOffset,
+        'left'
+    );
+
+    return produceTraverse(rightSliceResult, draft => {
+        if (draft.id === commonParent.id) {
+            let startIndex = 0;
+            let endIndex = 0;
+            let i = 0;
+
+            while (i < (draft as GroupNode).children.length) {
+                if ((draft as GroupNode).children[i].id === leftSliceNewNode!.id) {
+                    startIndex = i;
+                }
+
+                if ((draft as GroupNode).children[i].id === rightSliceNewNode!.id) {
+                    endIndex = i;
+                }
+
+                i++;
+            }
+
+            if (startIndex > endIndex) {
+                const tmp = startIndex;
+                startIndex = endIndex;
+                endIndex = tmp;
+            }
+
+            if (startNode !== endNode) {
+                endIndex += 1;
+            }
+
+            const toWrap = (draft as GroupNode).children.splice(startIndex, endIndex - startIndex);
+
+            group.children.push(...toWrap);
+
+            (draft as GroupNode).children.splice(startIndex, 0, group);
+
+            return true;
+        }
+
+        return false;
+    })
+}
+
+export const sliceByTextNode = (root: GroupNode, sliceNode: GroupNode, textNode: TextNode, offset: number, mode: 'left' | 'right'): { result: GroupNode, newNode: TreeNode | null } => {
+    let newNode = null;
+
+    const result = produceTraverse(root, draft => {
+        if (draft.id === sliceNode.id) {
+            const path = findPathToNode(draft, textNode.id);
+
+            // Remove slieceNode from path
+            path.shift();
+
+            // Save sliceNode subling
+            const sliceNodeSubling = path[0];
+
+            let current: TreeNode = path.pop()!;
+            let treeCopy = copyNode(current);
+            let parent = path[path.length - 1] as GroupNode;
+
+            if (mode === 'left') {
+                (treeCopy as TextNode).text = (current as TextNode).text.substring(0, offset);
+                (current as TextNode).text = (current as TextNode).text.substring(offset);
+            }
+
+            if (mode === 'right') {
+                (treeCopy as TextNode).text = (current as TextNode).text.substring(offset);
+                (current as TextNode).text = (current as TextNode).text.substring(0, offset);
+            }
+
+            while (path.length > 0) {
+                const childIndex = parent.children.findIndex(child => child.id === current.id);
+                const newParentCopy = copyNode(parent) as GroupNode;
+
+                if (mode === 'left') {
+                    for (let i = 0; i < childIndex; i++) {
+                        newParentCopy.children.push(deepCopyNode(parent.children[i]));
+                    }
+
+                    newParentCopy.children.push(treeCopy)
+
+                    parent.children.splice(0, childIndex)
+                }
+
+                if (mode === 'right') {
+                    newParentCopy.children.push(treeCopy)
+
+                    for (let i = childIndex + 1; i < parent.children.length ; i++) {
+                        newParentCopy.children.push(deepCopyNode(parent.children[i]));
+                    }
+
+                    parent.children.splice(childIndex + 1)
+                }
+
+                treeCopy = newParentCopy;
+                current = path.pop()!;
+                parent = path[path.length - 1] as GroupNode;
+            }
+
+            if (mode === 'left') {
+                (draft as GroupNode).children = insertBefore(draft as GroupNode, sliceNodeSubling.id, treeCopy!).children;
+            }
+
+            if (mode === 'right') {
+                (draft as GroupNode).children = insertAfter(draft as GroupNode, sliceNodeSubling.id, treeCopy!).children;
+            }
+
+            newNode = treeCopy;
+
+            return true;
+        }
+
+        return false;
+    })
+
+    return { result, newNode }
 }
 
 export const produceTraverse = (node: GroupNode, callback: (element: TreeNode) => boolean) => {

@@ -20,7 +20,7 @@ export interface HeaderNode extends TokenNode {
 export const createHeaderNode = (text: string, level: HeaderLevel = HeaderLevel.H1): HeaderNode => ({
     id: randomUUID(),
     type: 'token',
-    view: 'header-node',
+    kind: 'header-node',
     level,
     text,
 })

@@ -16,12 +16,12 @@ export interface BoldNode extends GroupNode {
 export const createBoldNode = (children: TreeNode[] = []): BoldNode => ({
     id: randomUUID(),
     type: 'group',
-    view: 'bold-node',
+    kind: 'bold-node',
     children
 })
 
-export const boldNodeTemplate: Template<BoldNode> = (node, templates) => {
-    return html`<b id="${node.id}">${node.children.map(child => templates.render(child.view, child))}</b>`;
+export const boldNodeTemplate: Template<BoldNode> = (node, render) => {
+    return html`<b id="${node.id}">${node.children.map(child => render(child))}</b>`;
 }
 
 export const boldInlineTool: InlineTool = {
@@ -36,7 +36,7 @@ export class BoldToolElement extends LitElement {
 
     onClick = () => {
         const boldNode = createBoldNode();
-        this.editor.do((editor) => editor.selection.surroundContents(editor.state, boldNode));
+        this.editor.selection.surround(boldNode);
     }
 
     override render() {

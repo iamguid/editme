@@ -1,35 +1,22 @@
-import { stub } from 'sinon'
 import chai, { expect } from 'chai'
 import chaiSubset from 'chai-subset';
 chai.use(chaiSubset);
 
-import { Selection } from './selection'
 import { TextNode, createTextNode } from '../nodes/text'
 import { createRootNode } from '../nodes/root'
-import { GroupNode } from './tree'
+import { GroupNode, sliceByTextNode, surround } from './tree'
 import { createBoldNode } from '../nodes/bold'
 
-describe("selection", () => {
-    it("Selection should be created", () => {
-        const selection = new Selection()
-        expect(selection).to.be.instanceOf(Selection)
-    })
-
-    // #region surroundContents
-    it("surroundContents should return correct result (left text, right text)", () => {
+describe("tree", () => {
+    // #region surround
+    it("surround should return correct result (left text, right text)", () => {
         const tree = createRootNode([
             createTextNode('Hello world')
         ])
 
         const text = tree.children[0] as TextNode;
-        const selection = new Selection();
 
-        stub(selection, 'isSomethingSelected').get(() => true);
-        stub(selection, 'startNode').get(() => text);
-        stub(selection, 'endNode').get(() => text);
-        stub(selection, 'range').get(() => ({ startOffset: 3, endOffset: 9 }));
-
-        const result = selection.surroundContents(tree, createBoldNode());
+        const result = surround(tree, text, text, 3, 9, createBoldNode());
 
         expect(result).to.containSubset({
             type: 'group',
@@ -46,7 +33,7 @@ describe("selection", () => {
         })
     })
 
-    it("surroundContents should return correct result (left text, right tree)", () => {
+    it("surround should return correct result (left text, right tree)", () => {
         const tree = createRootNode([
             createTextNode('AABB'),
             createBoldNode([
@@ -57,14 +44,8 @@ describe("selection", () => {
         const textA = tree.children[0] as TextNode;
         const bold = tree.children[1] as GroupNode;
         const textB = bold.children[0] as TextNode;
-        const selection = new Selection();
 
-        stub(selection, 'isSomethingSelected').get(() => true);
-        stub(selection, 'startNode').get(() => textA);
-        stub(selection, 'endNode').get(() => textB);
-        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
-
-        const result = selection.surroundContents(tree, createBoldNode());
+        const result = surround(tree, textA, textB, 2, 2, createBoldNode());
 
         expect(result).to.containSubset({
             type: 'group',
@@ -92,7 +73,7 @@ describe("selection", () => {
         })
     })
 
-    it("surroundContents should return correct result (left tree, right text)", () => {
+    it("surround should return correct result (left tree, right text)", () => {
         const tree = createRootNode([
             createBoldNode([
                 createTextNode('CCDD'),
@@ -101,16 +82,10 @@ describe("selection", () => {
         ])
 
         const bold = tree.children[0] as GroupNode;
-        const textB = bold.children[0] as TextNode;
-        const textA = tree.children[1] as TextNode;
-        const selection = new Selection();
+        const textA = bold.children[0] as TextNode;
+        const textB = tree.children[1] as TextNode;
 
-        stub(selection, 'isSomethingSelected').get(() => true);
-        stub(selection, 'startNode').get(() => textB);
-        stub(selection, 'endNode').get(() => textA);
-        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
-
-        const result = selection.surroundContents(tree, createBoldNode());
+        const result = surround(tree, textA, textB, 2, 2, createBoldNode());
 
         expect(result).to.containSubset({
             type: 'group',
@@ -138,7 +113,7 @@ describe("selection", () => {
         })
     })
 
-    it("surroundContents should return correct result (left tree, right tree)", () => { 
+    it("surround should return correct result (left tree, right tree)", () => { 
         const tree = createRootNode([
             createBoldNode([
                 createTextNode('AABB'),
@@ -152,14 +127,8 @@ describe("selection", () => {
         const boldB = tree.children[1] as GroupNode;
         const textA = boldA.children[0] as TextNode;
         const textB = boldB.children[0] as TextNode;
-        const selection = new Selection();
 
-        stub(selection, 'isSomethingSelected').get(() => true);
-        stub(selection, 'startNode').get(() => textA);
-        stub(selection, 'endNode').get(() => textB);
-        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
-
-        const result = selection.surroundContents(tree, createBoldNode());
+        const result = surround(tree, textA, textB, 2, 2, createBoldNode());
 
         expect(result).to.containSubset({
             type: 'group',
@@ -197,7 +166,7 @@ describe("selection", () => {
         })
     })
     
-    it("surroundContents should return correct result (left text, between text, right text)", () => { 
+    it("surround should return correct result (left text, between text, right text)", () => { 
         const tree = createRootNode([
             createTextNode('AABB'),
             createTextNode('CCDD'),
@@ -206,14 +175,8 @@ describe("selection", () => {
 
         const textA = tree.children[0] as TextNode;
         const textB = tree.children[2] as TextNode;
-        const selection = new Selection();
 
-        stub(selection, 'isSomethingSelected').get(() => true);
-        stub(selection, 'startNode').get(() => textA);
-        stub(selection, 'endNode').get(() => textB);
-        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
-
-        const result = selection.surroundContents(tree, createBoldNode());
+        const result = surround(tree, textA, textB, 2, 2, createBoldNode());
 
         expect(result).to.containSubset({
             type: 'group',
@@ -232,7 +195,7 @@ describe("selection", () => {
         })
     })
 
-    it("surroundContents should return correct result (left tree, between tree, right tree)", () => { 
+    it("surround should return correct result (left tree, between tree, right tree)", () => { 
         const tree = createRootNode([
             createBoldNode([
                 createTextNode('AABB'),
@@ -249,14 +212,8 @@ describe("selection", () => {
         const boldB = tree.children[2] as GroupNode;
         const textA = boldA.children[0] as TextNode;
         const textB = boldB.children[0] as TextNode;
-        const selection = new Selection();
 
-        stub(selection, 'isSomethingSelected').get(() => true);
-        stub(selection, 'startNode').get(() => textA);
-        stub(selection, 'endNode').get(() => textB);
-        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
-
-        const result = selection.surroundContents(tree, createBoldNode());
+        const result = surround(tree, textA, textB, 2, 2, createBoldNode());
 
         expect(result).to.containSubset({
             type: 'group',
@@ -300,7 +257,7 @@ describe("selection", () => {
         })
     })
 
-    it("surroundContents should return correct result (left text, between tree, right text)", () => { 
+    it("surround should return correct result (left text, between tree, right text)", () => { 
         const tree = createRootNode([
             createTextNode('AABB'),
             createBoldNode([
@@ -311,14 +268,8 @@ describe("selection", () => {
 
         const textA = tree.children[0] as TextNode;
         const textB = tree.children[2] as TextNode;
-        const selection = new Selection();
 
-        stub(selection, 'isSomethingSelected').get(() => true);
-        stub(selection, 'startNode').get(() => textA);
-        stub(selection, 'endNode').get(() => textB);
-        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
-
-        const result = selection.surroundContents(tree, createBoldNode());
+        const result = surround(tree, textA, textB, 2, 2, createBoldNode());
 
         expect(result).to.containSubset({
             type: 'group',
@@ -342,7 +293,7 @@ describe("selection", () => {
         })
     })
 
-    it("surroundContents should return correct result (left tree, between text, right tree)", () => {
+    it("surroundC should return correct result (left tree, between text, right tree)", () => {
         const tree = createRootNode([
             createBoldNode([
                 createTextNode('AABB'),
@@ -357,14 +308,8 @@ describe("selection", () => {
         const boldB = tree.children[2] as GroupNode;
         const textA = boldA.children[0] as TextNode;
         const textB = boldB.children[0] as TextNode;
-        const selection = new Selection();
 
-        stub(selection, 'isSomethingSelected').get(() => true);
-        stub(selection, 'startNode').get(() => textA);
-        stub(selection, 'endNode').get(() => textB);
-        stub(selection, 'range').get(() => ({ startOffset: 2, endOffset: 2 }));
-
-        const result = selection.surroundContents(tree, createBoldNode());
+        const result = surround(tree, textA, textB, 2, 2, createBoldNode());
 
         expect(result).to.containSubset({
             type: 'group',
@@ -403,7 +348,7 @@ describe("selection", () => {
         })
     })
 
-    it("surroundContents should return correct result (left text, right text, select inside)", () => {
+    it("surround should return correct result (left text, right text, select inside)", () => {
         const tree = createRootNode([
             createTextNode('AABB'),
             createTextNode('CCDD'),
@@ -411,14 +356,8 @@ describe("selection", () => {
         ])
 
         const text = tree.children[1] as TextNode;
-        const selection = new Selection();
 
-        stub(selection, 'isSomethingSelected').get(() => true);
-        stub(selection, 'startNode').get(() => text);
-        stub(selection, 'endNode').get(() => text);
-        stub(selection, 'range').get(() => ({ startOffset: 1, endOffset: 3 }));
-
-        const result = selection.surroundContents(tree, createBoldNode());
+        const result = surround(tree, text, text, 1, 3, createBoldNode());
 
         expect(result).to.containSubset({
             type: 'group',
@@ -438,16 +377,15 @@ describe("selection", () => {
     })
     // #endregion
 
-    // #region sliceTextNode
-    it("sliceTextNode should return correct result (text, left slice)", () => {
+    // #region sliceByTextNode
+    it("sliceByTextNode should return correct result (text, left slice)", () => {
         const tree = createRootNode([
             createTextNode('Hello world')
         ])
 
         const text = tree.children[0] as TextNode;
 
-        const selection = new Selection();
-        const { result, newNode } = selection.sliceTextNode(tree, tree, text, 5, 'left');
+        const { result, newNode } = sliceByTextNode(tree, tree, text, 5, 'left');
 
         expect(newNode).to.containSubset({ type: 'token', text: 'Hello' });
 
@@ -460,15 +398,14 @@ describe("selection", () => {
         })
     })
 
-    it("sliceTextNode should return correct result (text, right slice)", () => {
+    it("sliceByTextNode should return correct result (text, right slice)", () => {
         const tree = createRootNode([
             createTextNode('Hello world')
         ])
 
         const text = tree.children[0] as TextNode;
 
-        const selection = new Selection();
-        const { result, newNode } = selection.sliceTextNode(tree, tree, text, 5, 'right');
+        const { result, newNode } = sliceByTextNode(tree, tree, text, 5, 'right');
 
         expect(newNode).to.containSubset({ type: 'token', text: ' world' });
 
@@ -481,7 +418,7 @@ describe("selection", () => {
         })
     })
 
-    it("sliceTextNode should return correct result (text inside bold, left slice)", () => {
+    it("sliceByTextNode should return correct result (text inside bold, left slice)", () => {
         const tree = createRootNode([
             createBoldNode([
                 createTextNode('Hello world')
@@ -491,8 +428,7 @@ describe("selection", () => {
         const bold = tree.children[0] as GroupNode;
         const text = bold.children[0] as TextNode;
 
-        const selection = new Selection();
-        const { result, newNode } = selection.sliceTextNode(tree, tree, text, 5, 'left');
+        const { result, newNode } = sliceByTextNode(tree, tree, text, 5, 'left');
 
         expect(newNode).to.containSubset({
             type: 'group',
@@ -520,7 +456,7 @@ describe("selection", () => {
         })
     })
 
-    it("sliceTextNode should return correct result (text inside bold, right slice)", () => {
+    it("sliceByTextNode should return correct result (text inside bold, right slice)", () => {
         const tree = createRootNode([
             createBoldNode([
                 createTextNode('Hello world')
@@ -530,8 +466,7 @@ describe("selection", () => {
         const bold = tree.children[0] as GroupNode;
         const text = bold.children[0] as TextNode;
 
-        const selection = new Selection();
-        const { result, newNode } = selection.sliceTextNode(tree, tree, text, 5, 'right');
+        const { result, newNode } = sliceByTextNode(tree, tree, text, 5, 'right');
 
         expect(newNode).to.containSubset({
             type: 'group',
@@ -559,7 +494,7 @@ describe("selection", () => {
         })
     })
 
-    it("sliceTextNode should return correct result (text inside bold inside bold, left slice)", () => {
+    it("sliceByTextNode should return correct result (text inside bold inside bold, left slice)", () => {
         const tree = createRootNode([
             createBoldNode([
                 createBoldNode([
@@ -572,8 +507,7 @@ describe("selection", () => {
         const bold2 = bold1.children[0] as GroupNode;
         const text = bold2.children[0] as TextNode;
 
-        const selection = new Selection();
-        const { result, newNode } = selection.sliceTextNode(tree, tree, text, 5, 'left');
+        const { result, newNode } = sliceByTextNode(tree, tree, text, 5, 'left');
 
         expect(newNode).to.containSubset({
             type: 'group',
@@ -616,7 +550,7 @@ describe("selection", () => {
         })
     })
 
-    it("sliceTextNode should return correct result (text inside bold inside bold, right slice)", () => {
+    it("sliceByTextNode should return correct result (text inside bold inside bold, right slice)", () => {
         const tree = createRootNode([
             createBoldNode([
                 createBoldNode([
@@ -629,8 +563,7 @@ describe("selection", () => {
         const bold2 = bold1.children[0] as GroupNode;
         const text = bold2.children[0] as TextNode;
 
-        const selection = new Selection();
-        const { result, newNode } = selection.sliceTextNode(tree, tree, text, 5, 'right');
+        const { result, newNode } = sliceByTextNode(tree, tree, text, 5, 'right');
 
         expect(newNode).to.containSubset({
             type: 'group',
@@ -673,7 +606,7 @@ describe("selection", () => {
         })
     })
 
-    it("sliceTextNode should return correct result (text inside bold, many flat sublings, left slice)", () => {
+    it("sliceByTextNode should return correct result (text inside bold, many flat sublings, left slice)", () => {
         const tree = createRootNode([
             createBoldNode([
                 createTextNode('AAAA'),
@@ -687,8 +620,7 @@ describe("selection", () => {
         const bold = tree.children[0] as GroupNode;
         const text = bold.children[2] as TextNode;
 
-        const selection = new Selection();
-        const { result, newNode } = selection.sliceTextNode(tree, tree, text, 2, 'left');
+        const { result, newNode } = sliceByTextNode(tree, tree, text, 2, 'left');
 
         expect(newNode).to.containSubset({
             type: 'group',
@@ -722,7 +654,7 @@ describe("selection", () => {
         })
     })
 
-    it("sliceTextNode should return correct result (text inside bold, many flat sublings, right slice)", () => {
+    it("sliceByTextNode should return correct result (text inside bold, many flat sublings, right slice)", () => {
         const tree = createRootNode([
             createBoldNode([
                 createTextNode('AAAA'),
@@ -736,8 +668,7 @@ describe("selection", () => {
         const bold = tree.children[0] as GroupNode;
         const text = bold.children[2] as TextNode;
 
-        const selection = new Selection();
-        const { result, newNode } = selection.sliceTextNode(tree, tree, text, 2, 'right');
+        const { result, newNode } = sliceByTextNode(tree, tree, text, 2, 'right');
 
         expect(newNode).to.containSubset({
             type: 'group',
@@ -772,7 +703,7 @@ describe("selection", () => {
     })
 
 
-    it("sliceTextNode should return correct result (text inside bold, many tree sublings, left slice)", () => {
+    it("sliceByTextNode should return correct result (text inside bold, many tree sublings, left slice)", () => {
         const tree = createRootNode([
             createBoldNode([
                 createBoldNode([
@@ -790,8 +721,7 @@ describe("selection", () => {
         const bold = tree.children[0] as GroupNode;
         const text = bold.children[1] as TextNode;
 
-        const selection = new Selection();
-        const { result, newNode } = selection.sliceTextNode(tree, tree, text, 2, 'left');
+        const { result, newNode } = sliceByTextNode(tree, tree, text, 2, 'left');
 
         expect(newNode).to.containSubset({
             type: 'group',
@@ -840,7 +770,7 @@ describe("selection", () => {
         })
     })
 
-    it("sliceTextNode should return correct result (text inside bold, many tree sublings, right slice)", () => {
+    it("sliceByTextNode should return correct result (text inside bold, many tree sublings, right slice)", () => {
         const tree = createRootNode([
             createBoldNode([
                 createBoldNode([
@@ -858,8 +788,7 @@ describe("selection", () => {
         const bold = tree.children[0] as GroupNode;
         const text = bold.children[1] as TextNode;
 
-        const selection = new Selection();
-        const { result, newNode } = selection.sliceTextNode(tree, tree, text, 2, 'right');
+        const { result, newNode } = sliceByTextNode(tree, tree, text, 2, 'right');
 
         expect(newNode).to.containSubset({
             type: 'group',

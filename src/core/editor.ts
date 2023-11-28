@@ -1,36 +1,62 @@
-import { Command } from "./command";
-import { History } from "./history";
-import { Selection } from "./selection";
-import { RootNode, createRootNode } from "../nodes/root";
-import { GroupNode } from "./tree";
+import { RootNode, createRootNode, rootNodeTemplate } from "../nodes/root";
+import { GroupNode, TreeNode } from "./tree";
 import { EventBus, EventBusProtocol } from "./event-bus";
 import { InlineTool } from "./inline-tool";
-import { Template, Templates } from "./templates";
+import { AbstractModule } from "./module";
+import { SelectionModule } from "./selection";
+import { TemplatesModule } from "./templates";
+import { HistoryModule } from "./history";
+import { headerNodeTemplate } from "../nodes/header";
+import { paragraphNodeTemplate } from "../nodes/paragraph";
+import { textNodeTemplate } from "../nodes/text";
+import { boldInlineTool, boldNodeTemplate } from "../nodes/bold";
+import { italicNodeTemplate } from "../nodes/italic";
+import { editorNodeBlockTemplate } from "../nodes/editor-block/editor-block";
+
+export type Command = (editor: Editor) => GroupNode
 
 export const stateChangedEvent = Symbol('state_changed');
 
-export interface EditorEventBusProtocol extends EventBusProtocol {
+export interface EditorProtocol extends EventBusProtocol {
     stateChanged: { type: typeof stateChangedEvent, state: GroupNode };
 }
 
-export class Editor extends EventBus<EditorEventBusProtocol> {
+export class Editor extends EventBus<EditorProtocol> {
     static empty() {
-        return new Editor(createRootNode(), new Selection(), new History(), new Templates());
+        return new Editor(createRootNode());
     }
 
     static from(root: RootNode) {
-        return new Editor(root, new Selection(), new History(), new Templates());
+        return new Editor(root);
     }
 
-    inlineTools: InlineTool[] = [];
+    modules: AbstractModule<EventBusProtocol>[] = [];
+    tools: InlineTool[] = [];
 
-    constructor(
-        private _state: GroupNode,
-        private _selection: Selection,
-        private _history: History,
-        private _templates: Templates,
-    ) {
+    constructor(private _state: RootNode) {
         super();
+
+        // Register core modules
+        this.registerModule(TemplatesModule);
+        this.registerModule(SelectionModule);
+        this.registerModule(HistoryModule);
+
+        // Register core templates
+        this.templates.register('root-node', rootNodeTemplate);
+        this.templates.register('header-node', headerNodeTemplate);
+        this.templates.register('paragraph-node', paragraphNodeTemplate);
+        this.templates.register('text-node', textNodeTemplate);
+        this.templates.register('bold-node', boldNodeTemplate);
+        this.templates.register('italic-node', italicNodeTemplate);
+        this.templates.register('editor-block', editorNodeBlockTemplate);
+
+        // Register core inline tools
+        this.registerTool(boldInlineTool);
+    }
+
+    set state(value: RootNode) {
+        this._state = value;
+        this.emit('stateChanged', { type: stateChangedEvent, state: value });
     }
 
     get state() {
@@ -38,68 +64,64 @@ export class Editor extends EventBus<EditorEventBusProtocol> {
     }
 
     get selection() {
-        return this._selection;
-    }
-
-    get history() {
-        return this._history;
+        return this.resolveModule(SelectionModule);
     }
 
     get templates() {
-        return this._templates;
+        return this.resolveModule(TemplatesModule);
     }
 
-    registerInlineTool(tool: InlineTool) {
-        if (this.inlineTools.some(t => t.id === tool.id)) {
+    get history() {
+        return this.resolveModule(HistoryModule);
+    }
+
+    registerTool(tool: InlineTool) {
+        if (this.tools.some(t => t.id === tool.id)) {
             throw new Error(`Inline tool with id ${tool.id} already registered`);
         }
 
-        this.inlineTools.push(tool);
+        this.tools.push(tool);
     }
 
-    unregisterInlineTool(id: string) {
-        if (this.inlineTools.some(t => t.id === id)) {
+    unregisterTool(id: string) {
+        if (this.tools.some(t => t.id === id)) {
             throw new Error(`Inline tool with id ${id} not registered`);
         }
 
-        this.inlineTools = this.inlineTools.filter(t => t.id !== id);
+        this.tools = this.tools.filter(t => t.id !== id);
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    registerTemplate(id: string, template: Template<any>) {
-        this.templates.register(id, template);
-    }
+    registerModule(ctor: new (...args: any[]) => AbstractModule<EventBusProtocol>) {
+        const module = this.modules.find(m => m instanceof ctor);
 
-    unregisterTemplate(id: string) {
-        this.templates.unregister(id);
-    }
-
-    undo() {
-        if (this._history.canUndo) {
-            const { next } = this._history.backward()!;
-            this._state = next.state;
-            this.emit('stateChanged', { type: stateChangedEvent, state: next.state });
+        if (module) {
+            throw new Error(`Module ${ctor.name} already registered`);
         }
+
+        const instance = new ctor(this);
+        this.modules.push(instance);
+
+        return instance;
     }
 
-    redo() {
-        if (this._history.canRedo) {
-            const { next } = this._history.forward()!;
-            this._state = next.state;
-            this.emit('stateChanged', { type: stateChangedEvent, state: next.state });
+    resolveModule<T>(ctor: new (...args: any[]) => T): T {
+        const module = this.modules.find(m => m instanceof ctor);
+
+        if (!module) {
+            throw new Error(`Module ${ctor.name} not found`);
         }
-    }
 
-    do(command: Command) {
-        const next = command(this);
-        this._history.push(next, command);
-        this._state = next;
-        this.emit('stateChanged', { type: stateChangedEvent, state: next });
+        return module as T;
     }
 
     execute(command: Command) {
         const next = command(this);
-        this._state = next;
-        this.emit('stateChanged', { type: stateChangedEvent, state: next });
+        
+        let processedState = next;
+        for (const module of this.modules) {
+            processedState = module.processState(processedState);
+        }
+
+        this.state = processedState;
     }
 }

@@ -10,10 +10,10 @@ export interface ParagraphNode extends GroupNode {
 export const createParagraphNode = (children: TreeNode[] = []): ParagraphNode => ({
     id: randomUUID(),
     type: 'group',
-    view: 'paragraph-node',
+    kind: 'paragraph-node',
     children,
 })
 
-export const paragraphNodeTemplate: Template<ParagraphNode> = (node, templates) => {
-    return html`<p id="${node.id}">${node.children.map(child => templates.render(child.view, child))}</p>`;
+export const paragraphNodeTemplate: Template<ParagraphNode> = (node, render) => {
+    return html`<p id="${node.id}">${node.children.map(child => render(child))}</p>`;
 }

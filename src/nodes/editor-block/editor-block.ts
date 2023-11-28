@@ -7,11 +7,11 @@ import { ref, createRef, Ref } from 'lit/directives/ref.js';
 import { editorContext } from '../../editor-context';
 import { Editor } from '../../core/editor';
 import { GroupNode, TreeNode } from '../../core/tree';
-import { randomUUID } from '../../core/utils';
+import { randomUUID, stringHash, templateAsString } from '../../core/utils';
 import { Template } from '../../core/templates';
 import { MutationController } from './mutation-controller';
 import { SelectionController } from './selection-controller';
-import { stringHash, templateAsString } from '../../utils';
+import { PasteController } from './paste-controller';
 
 export interface EditorBlockNode extends GroupNode {
 }
@@ -19,7 +19,7 @@ export interface EditorBlockNode extends GroupNode {
 export const createEditorBlockNode = (children: TreeNode[] = []): EditorBlockNode => ({
     id: randomUUID(),
     type: 'group',
-    view: 'editor-block',
+    kind: 'editor-block',
     children
 })
 
@@ -39,13 +39,14 @@ export class EditorBlockElement extends LitElement {
 
     mutationController = new MutationController(this);
     selectionController = new SelectionController(this);
+    pasteController = new PasteController(this);
 
     onInput = () => {
         this.requestUpdate();
     };
 
     get childrenInnerHTML() {
-        return templateAsString(html`${this.node.children.map(child => this.editor.templates.render(child.view, child))}`);
+        return templateAsString(html`${this.node.children.map(child => this.editor.templates.render(child))}`);
     }
 
     static override styles = css`

@@ -10,10 +10,10 @@ export interface ItalicNode extends GroupNode {
 export const createItalicNode = (children: TreeNode[] = []): ItalicNode => ({
     id: randomUUID(),
     type: 'group',
-    view: 'italic-node',
+    kind: 'italic-node',
     children,
 })
 
-export const italicNodeTemplate: Template<ItalicNode> = (node, templates) => {
-    return html`<i id="${node.id}">${node.children.map(child => templates.render(child.view, child))}</i>`;
+export const italicNodeTemplate: Template<ItalicNode> = (node, render) => {
+    return html`<i id="${node.id}">${node.children.map(child => render(child))}</i>`;
 }

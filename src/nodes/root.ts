@@ -10,10 +10,10 @@ export interface RootNode extends GroupNode {
 export const createRootNode = (children: TreeNode[] = []): RootNode => ({
     id: randomUUID(),
     type: 'group',
-    view: 'root-node',
+    kind: 'root-node',
     children,
 });
 
-export const rootNodeTemplate: Template<RootNode> = (node, templates) => {
-    return html`<div id="${node.id}">${node.children.map(child => templates.render(child.view, child))}</div>`;
+export const rootNodeTemplate: Template<RootNode> = (node, render) => {
+    return html`<div id="${node.id}">${node.children.map(child => render(child))}</div>`;
 }
