@@ -12,9 +12,10 @@ export const createTextNode = (text: string): TextNode => ({
     id: randomUUID(),
     type: 'token',
     kind: 'text-node',
+    view: 'inline',
     text
 })
 
-export const textNodeTemplate: Template<TextNode> = (node) => {
-    return html`<span id="${node.id}">${node.text}</span>`;
+export const textNodeTemplate: Template<TextNode> = (editor, node) => {
+    return html`<span data-node="${node.id}">${node.text}</span>`;
 }

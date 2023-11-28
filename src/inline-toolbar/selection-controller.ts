@@ -13,10 +13,10 @@ export class SelectionController implements ReactiveController {
     }
 
     hostConnected() {
-        this.host.editor.selection.on('selectionChanged', this.onSelectionChanged);
+        this.host.editor.inlineSelection.on('selectionChanged', this.onSelectionChanged);
     }
 
     hostDisconnected() {
-        this.host.editor.selection.off('selectionChanged', this.onSelectionChanged);
+        this.host.editor.inlineSelection.off('selectionChanged', this.onSelectionChanged);
     }
 }

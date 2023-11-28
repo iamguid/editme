@@ -12,10 +12,11 @@ export const createLinkNode = (link: string, children: TreeNode[] = []): LinkNod
     id: randomUUID(),
     type: 'group',
     kind: 'link-node',
+    view: 'inline',
     link,
     children,
 })
 
-export const linkNodeTemplate: Template<LinkNode> = (node, render) => {
-    return html`<a id="${node.id}" href="${node.link}">${node.children.map(child => render(child))}</a>`;
+export const linkNodeTemplate: Template<LinkNode> = (editor, node, render) => {
+    return html`<a data-node="${node.id}" href="${node.link}">${node.children.map(child => render(child))}</a>`;
 }

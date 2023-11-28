@@ -6,11 +6,11 @@ import { findNearestParentTreeNode } from "./utils";
 
 export const selectionChangedEvent = Symbol('selection_changed');
 
-export interface SelectionProtocol extends EventBusProtocol {
+export interface InlineSelectionProtocol extends EventBusProtocol {
     selectionChanged: { type: typeof selectionChangedEvent };
 }
 
-export class SelectionModule extends AbstractModule<SelectionProtocol> {
+export class InlineSelectionModule extends AbstractModule<InlineSelectionProtocol> {
     domNode: globalThis.Node | null = null;
     editmeNode: TreeNode | null = null;
     selection: globalThis.Selection | null = null;

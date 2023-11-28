@@ -13,7 +13,7 @@ export class PasteController implements ReactiveController {
 
         let paste = e.clipboardData?.getData("text/html") ?? '';
         paste = paste.toUpperCase();
-        const selection = this.host.editor.selection.selection;
+        const selection = this.host.editor.inlineSelection.selection;
         if (!selection || !selection.rangeCount) return;
         selection.deleteFromDocument();
         selection.getRangeAt(0).insertNode(document.createTextNode(paste));

@@ -1,4 +1,6 @@
-import { html } from "lit";
+import { TemplateResult, html } from "lit";
+import { classMap } from 'lit/directives/class-map.js';
+
 import { Template } from "../core/templates";
 import { TokenNode } from "../core/tree";
 import { randomUUID } from "../core/utils";
@@ -21,17 +23,27 @@ export const createHeaderNode = (text: string, level: HeaderLevel = HeaderLevel.
     id: randomUUID(),
     type: 'token',
     kind: 'header-node',
+    view: 'block',
     level,
     text,
 })
 
-export const headerNodeTemplate: Template<HeaderNode> = (node) => {
+export const headerNodeTemplate: Template<HeaderNode> = (editor, node) => {
+    const wrapper = (children: TemplateResult) => {
+        const classes = {
+            "em-block": true,
+            "em-block--selected": editor.blockSelection.isNodeSelected(node.id)
+        };
+
+        return html`<div data-node="${node.id}" class=${classMap(classes)}>${children}</div>`;
+    }
+
     switch (node.level) {
-        case HeaderLevel.H1: return html`<h1 id="${node.id}">${node.text}</h1>`;
-        case HeaderLevel.H2: return html`<h2 id="${node.id}">${node.text}</h2>`;
-        case HeaderLevel.H3: return html`<h3 id="${node.id}">${node.text}</h3>`;
-        case HeaderLevel.H4: return html`<h4 id="${node.id}">${node.text}</h4>`;
-        case HeaderLevel.H5: return html`<h5 id="${node.id}">${node.text}</h5>`;
-        case HeaderLevel.H6: return html`<h6 id="${node.id}">${node.text}</h6>`;
+        case HeaderLevel.H1: return wrapper(html`<h1>${node.text}</h1>`);
+        case HeaderLevel.H2: return wrapper(html`<h2>${node.text}</h2>`);
+        case HeaderLevel.H3: return wrapper(html`<h3>${node.text}</h3>`);
+        case HeaderLevel.H4: return wrapper(html`<h4>${node.text}</h4>`);
+        case HeaderLevel.H5: return wrapper(html`<h5>${node.text}</h5>`);
+        case HeaderLevel.H6: return wrapper(html`<h6>${node.text}</h6>`);
     }
 }

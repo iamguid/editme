@@ -1,4 +1,4 @@
-import { LitElement, PropertyValues, css } from 'lit';
+import { LitElement, css } from 'lit';
 import { consume } from '@lit/context';
 import { customElement, property } from 'lit/decorators.js';
 import { html } from 'lit/static-html.js';
@@ -20,11 +20,12 @@ export const createEditorBlockNode = (children: TreeNode[] = []): EditorBlockNod
     id: randomUUID(),
     type: 'group',
     kind: 'editor-block',
+    view: 'block',
     children
 })
 
-export const editorNodeBlockTemplate: Template<EditorBlockNode> = (node) => {
-    return html`<em-editor-block .node=${node}/>`;
+export const editorNodeBlockTemplate: Template<EditorBlockNode> = (editor, node) => {
+    return html`<em-editor-block .node=${node} data-node=${node.id}/>`;
 }
 
 @customElement('em-editor-block')
@@ -51,8 +52,6 @@ export class EditorBlockElement extends LitElement {
 
     static override styles = css`
         div {
-            display: block;
-            width: 100%;
             white-space: pre-wrap; /* important rule for handle nbsp, see https://stackoverflow.com/a/60804106/19516518 */
         }
     `;
@@ -68,7 +67,6 @@ export class EditorBlockElement extends LitElement {
             <div
                 ${ref(this.editorRef)}
                 @input=${this.onInput}
-                {this.node.id}
                 contenteditable
                 spellcheck
                 autocomplete="off"
@@ -82,5 +80,9 @@ export class EditorBlockElement extends LitElement {
         const nextHash = stringHash(this.childrenInnerHTML);
 
         return currentHash !== nextHash;
+    }
+
+    protected override createRenderRoot() {
+        return this;
     }
 }

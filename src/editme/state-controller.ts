@@ -6,16 +6,17 @@ export class StateController implements ReactiveController {
         host.addController(this);
     }
 
-    onStateChanged = () => {
-        console.log(this.host.editor.state)
+    onSomethingChanged = () => {
         this.host.requestUpdate();
     }
 
     hostConnected(): void {
-        this.host.editor.on('stateChanged', this.onStateChanged);
+        this.host.editor.on('stateChanged', this.onSomethingChanged);
+        this.host.editor.blockSelection.on('selectionChanged', this.onSomethingChanged);
     }
 
     hostDisconnected(): void {
-        this.host.editor.off('stateChanged', this.onStateChanged);
+        this.host.editor.off('stateChanged', this.onSomethingChanged);
+        this.host.editor.blockSelection.off('selectionChanged', this.onSomethingChanged);
     }
 }

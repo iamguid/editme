@@ -6,12 +6,14 @@ export interface GroupNode {
     id: string
     kind: string
     type: 'group'
+    view: 'block' | 'inline'
     children: TreeNode[]
 }
 
 export interface TokenNode {
     id: string
     kind: string
+    view: 'block' | 'inline'
     type: 'token'
 }
 

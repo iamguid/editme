@@ -11,9 +11,10 @@ export const createRootNode = (children: TreeNode[] = []): RootNode => ({
     id: randomUUID(),
     type: 'group',
     kind: 'root-node',
+    view: 'block',
     children,
 });
 
-export const rootNodeTemplate: Template<RootNode> = (node, render) => {
-    return html`<div id="${node.id}">${node.children.map(child => render(child))}</div>`;
+export const rootNodeTemplate: Template<RootNode> = (editor, node, render) => {
+    return html`<div data-node="${node.id}">${node.children.map(child => render(child))}</div>`;
 }

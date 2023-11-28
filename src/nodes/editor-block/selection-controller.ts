@@ -10,7 +10,7 @@ export class SelectionController implements ReactiveController {
     }
 
     onSelectionChange = () => {
-        this.host.editor.selection.updateSelection(this.root)
+        this.host.editor.inlineSelection.updateSelection(this.root)
     }
 
     hostConnected() {

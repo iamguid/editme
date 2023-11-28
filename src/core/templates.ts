@@ -2,8 +2,9 @@ import { TemplateResult } from "lit";
 import { TreeNode } from "./tree";
 import { AbstractModule } from "./module";
 import { EventBusProtocol } from "./event-bus";
+import { Editor } from "./editor";
 
-export type Template<TTreeNode extends TreeNode> = (node: TTreeNode, render: (node: TreeNode) => TemplateResult | Element | Text) => TemplateResult | Element | Text;
+export type Template<TTreeNode extends TreeNode> = (editor: Editor, node: TTreeNode, render: (node: TreeNode) => TemplateResult | Element | Text) => TemplateResult | Element | Text;
 
 export class TemplatesModule extends AbstractModule<EventBusProtocol> {
     private templates = new Map<string, Template<TreeNode>>();
@@ -23,6 +24,6 @@ export class TemplatesModule extends AbstractModule<EventBusProtocol> {
             throw new Error(`Template with id ${node.kind} not found`);
         }
 
-        return template(node, this.render.bind(this));
+        return template(this.editor, node, this.render.bind(this));
     }
 }

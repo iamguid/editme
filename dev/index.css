@@ -1,0 +1,16 @@
+.editme {
+    font-family: serif;
+    margin: 50px;
+
+    --selected-color: #f0f0f0;
+}
+
+.editme .em-block {
+}
+
+.editme .em-block--selected {
+    background: var(--selected-color);
+}
+
+.editme .em-block__content {
+}

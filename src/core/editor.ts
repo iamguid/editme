@@ -3,7 +3,7 @@ import { GroupNode, TreeNode } from "./tree";
 import { EventBus, EventBusProtocol } from "./event-bus";
 import { InlineTool } from "./inline-tool";
 import { AbstractModule } from "./module";
-import { SelectionModule } from "./selection";
+import { InlineSelectionModule } from "./inline-selection";
 import { TemplatesModule } from "./templates";
 import { HistoryModule } from "./history";
 import { headerNodeTemplate } from "../nodes/header";
@@ -12,6 +12,7 @@ import { textNodeTemplate } from "../nodes/text";
 import { boldInlineTool, boldNodeTemplate } from "../nodes/bold";
 import { italicNodeTemplate } from "../nodes/italic";
 import { editorNodeBlockTemplate } from "../nodes/editor-block/editor-block";
+import { BlockSelectionModule } from "./block-selection";
 
 export type Command = (editor: Editor) => GroupNode
 
@@ -38,7 +39,8 @@ export class Editor extends EventBus<EditorProtocol> {
 
         // Register core modules
         this.registerModule(TemplatesModule);
-        this.registerModule(SelectionModule);
+        this.registerModule(InlineSelectionModule);
+        this.registerModule(BlockSelectionModule);
         this.registerModule(HistoryModule);
 
         // Register core templates
@@ -63,8 +65,12 @@ export class Editor extends EventBus<EditorProtocol> {
         return this._state;
     }
 
-    get selection() {
-        return this.resolveModule(SelectionModule);
+    get inlineSelection() {
+        return this.resolveModule(InlineSelectionModule);
+    }
+
+    get blockSelection() {
+        return this.resolveModule(BlockSelectionModule);
     }
 
     get templates() {
@@ -91,20 +97,20 @@ export class Editor extends EventBus<EditorProtocol> {
         this.tools = this.tools.filter(t => t.id !== id);
     }
 
-    registerModule(ctor: new (...args: any[]) => AbstractModule<EventBusProtocol>) {
+    registerModule(ctor: new (...args: never[]) => AbstractModule<EventBusProtocol>) {
         const module = this.modules.find(m => m instanceof ctor);
 
         if (module) {
             throw new Error(`Module ${ctor.name} already registered`);
         }
 
-        const instance = new ctor(this);
+        const instance = new ctor(this as never);
         this.modules.push(instance);
 
         return instance;
     }
 
-    resolveModule<T>(ctor: new (...args: any[]) => T): T {
+    resolveModule<T>(ctor: new (...args: never[]) => T): T {
         const module = this.modules.find(m => m instanceof ctor);
 
         if (!module) {

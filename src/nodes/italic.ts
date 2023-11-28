@@ -11,9 +11,10 @@ export const createItalicNode = (children: TreeNode[] = []): ItalicNode => ({
     id: randomUUID(),
     type: 'group',
     kind: 'italic-node',
+    view: 'inline',
     children,
 })
 
-export const italicNodeTemplate: Template<ItalicNode> = (node, render) => {
-    return html`<i id="${node.id}">${node.children.map(child => render(child))}</i>`;
+export const italicNodeTemplate: Template<ItalicNode> = (editor, node, render) => {
+    return html`<i data-node="${node.id}">${node.children.map(child => render(child))}</i>`;
 }

@@ -17,11 +17,12 @@ export const createBoldNode = (children: TreeNode[] = []): BoldNode => ({
     id: randomUUID(),
     type: 'group',
     kind: 'bold-node',
+    view: 'inline',
     children
 })
 
-export const boldNodeTemplate: Template<BoldNode> = (node, render) => {
-    return html`<b id="${node.id}">${node.children.map(child => render(child))}</b>`;
+export const boldNodeTemplate: Template<BoldNode> = (editor, node, render) => {
+    return html`<b data-node="${node.id}">${node.children.map(child => render(child))}</b>`;
 }
 
 export const boldInlineTool: InlineTool = {
@@ -36,7 +37,7 @@ export class BoldToolElement extends LitElement {
 
     onClick = () => {
         const boldNode = createBoldNode();
-        this.editor.selection.surround(boldNode);
+        this.editor.inlineSelection.surround(boldNode);
     }
 
     override render() {

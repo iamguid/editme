@@ -18,7 +18,7 @@ export class InlineToolbarElement extends LitElement {
     containerRef: Ref<HTMLDivElement> = createRef();
 
     get selectionRect() {
-        return this.editor.selection.range?.getBoundingClientRect();
+        return this.editor.inlineSelection.range?.getBoundingClientRect();
     }
 
     get containerRect() {
@@ -68,7 +68,7 @@ export class InlineToolbarElement extends LitElement {
     override render() {
         return html`
             <div
-                class="container ${this.editor.selection.isSomethingSelected ? 'show' : 'hidden'}"
+                class="container ${this.editor.inlineSelection.isSomethingSelected ? 'show' : 'hidden'}"
                 style=${styleMap({left: this.toolbarX, top: this.toolbarY})}
                 ${ref(this.containerRef)}
             >
