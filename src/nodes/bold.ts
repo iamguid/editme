@@ -18,6 +18,7 @@ export const createBoldNode = (children: TreeNode[] = []): BoldNode => ({
     type: 'group',
     kind: 'bold-node',
     view: 'inline',
+    editable: false,
     children
 })
 

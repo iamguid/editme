@@ -17,13 +17,15 @@ export const randomUUID = (): string => {
 }
 
 export const findNearestParentTreeNode = (tree: TreeNode, element: HTMLElement): TreeNode | null => {
-    let currentElement: HTMLElement | null = element;
+    let currentElement: HTMLElement | Node | null = element;
 
     while (currentElement !== null) {
-        const nodeId = currentElement.getAttribute('data-node');
+        if (currentElement instanceof HTMLElement) {
+            const nodeId = currentElement.getAttribute('data-node');
 
-        if (nodeId !== null && nodeId !== undefined && nodeId !== '') {
-            return findById(tree, nodeId);
+            if (nodeId !== null && nodeId !== undefined && nodeId !== '') {
+                return findById(tree, nodeId);
+            }
         }
 
         currentElement = currentElement.parentElement;

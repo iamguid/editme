@@ -1,5 +1,4 @@
-import { TemplateResult, html } from "lit";
-import { classMap } from "lit/directives/class-map.js";
+import { html } from "lit";
 
 import { Template } from "../core/templates";
 import { GroupNode, TreeNode } from "../core/tree";
@@ -13,24 +12,10 @@ export const createContainerNode = (children: TreeNode[] = []): ContainerNode =>
     type: 'group',
     kind: 'container-node',
     view: 'block',
+    editable: false,
     children,
 })
 
 export const containerNodeTemplate: Template<ContainerNode> = (editor, node, render) => {
-    const wrapper = (children: TemplateResult) => {
-        const classes = {
-            "em-container": true,
-            "em-block": true,
-            "em-block--selected": editor.blockSelection.isNodeSelected(node.id),
-        };
-
-        return html`
-            <div data-node="${node.id}" class=${classMap(classes)}>
-                ${children}
-                <div class="em-spacer"/>
-            </div>
-        `;
-    }
-
-    return wrapper(html`${node.children.map(child => render(child))}`)
+    return html`<div class="em-container">${node.children.map(child => render(child))}</div>`;
 }

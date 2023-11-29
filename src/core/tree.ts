@@ -7,14 +7,16 @@ export interface GroupNode {
     kind: string
     type: 'group'
     view: 'block' | 'inline'
+    editable: boolean
     children: TreeNode[]
 }
 
 export interface TokenNode {
     id: string
     kind: string
-    view: 'block' | 'inline'
     type: 'token'
+    view: 'block' | 'inline'
+    editable: boolean
 }
 
 export type TreeNode = GroupNode | TokenNode

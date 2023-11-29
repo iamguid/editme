@@ -12,6 +12,7 @@ export const createRootNode = (children: TreeNode[] = []): RootNode => ({
     type: 'group',
     kind: 'root-node',
     view: 'block',
+    editable: false,
     children,
 });
 

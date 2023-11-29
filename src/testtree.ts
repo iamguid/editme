@@ -1,9 +1,6 @@
-import { createBoldNode } from "./nodes/bold";
 import { createColumnsNode } from "./nodes/columns";
 import { createContainerNode } from "./nodes/container";
-import { createEditorBlockNode } from "./nodes/editor-block/editor-block";
 import { HeaderLevel, createHeaderNode } from "./nodes/header";
-import { createItalicNode } from "./nodes/italic";
 import { createParagraphNode } from "./nodes/paragraph";
 import { RootNode, createRootNode } from "./nodes/root";
 import { createTextNode } from "./nodes/text";
@@ -47,9 +44,5 @@ export const testtree: RootNode = createRootNode([
                 createTextNode('lorem ipsum dolor sit amet'),
             ]),
         ]),
-    ]),
-
-    createEditorBlockNode([
-        createTextNode('test text'),
     ]),
 ])

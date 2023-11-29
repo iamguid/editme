@@ -12,7 +12,8 @@ export const createItalicNode = (children: TreeNode[] = []): ItalicNode => ({
     type: 'group',
     kind: 'italic-node',
     view: 'inline',
-    children,
+    editable: false,
+    children
 })
 
 export const italicNodeTemplate: Template<ItalicNode> = (editor, node, render) => {

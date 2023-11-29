@@ -1,32 +1,16 @@
-import { LitElement, css } from 'lit';
+import { LitElement, TemplateResult, css } from 'lit';
 import { consume } from '@lit/context';
 import { customElement, property } from 'lit/decorators.js';
 import { html } from 'lit/static-html.js';
 import { ref, createRef, Ref } from 'lit/directives/ref.js';
 
-import { editorContext } from '../../editor-context';
-import { Editor } from '../../core/editor';
-import { GroupNode, TreeNode } from '../../core/tree';
-import { randomUUID, stringHash, templateAsString } from '../../core/utils';
-import { Template } from '../../core/templates';
+import { editorContext } from '../editor-context';
+import { Editor } from '../core/editor';
+import { stringHash, templateAsString } from '../core/utils';
 import { MutationController } from './mutation-controller';
 import { SelectionController } from './selection-controller';
 import { PasteController } from './paste-controller';
-
-export interface EditorBlockNode extends GroupNode {
-}
-
-export const createEditorBlockNode = (children: TreeNode[] = []): EditorBlockNode => ({
-    id: randomUUID(),
-    type: 'group',
-    kind: 'editor-block',
-    view: 'block',
-    children
-})
-
-export const editorNodeBlockTemplate: Template<EditorBlockNode> = (editor, node) => {
-    return html`<em-editor-block .node=${node} data-node=${node.id}/>`;
-}
+import { GroupNode } from '../core/tree';
 
 @customElement('em-editor-block')
 export class EditorBlockElement extends LitElement {
@@ -34,7 +18,7 @@ export class EditorBlockElement extends LitElement {
     editor!: Editor;
 
     @property({ attribute: false })
-    node!: EditorBlockNode;
+    childrenTemplate!: TemplateResult;
 
     editorRef: Ref<HTMLDivElement> = createRef();
 
@@ -47,7 +31,7 @@ export class EditorBlockElement extends LitElement {
     };
 
     get childrenInnerHTML() {
-        return templateAsString(html`${this.node.children.map(child => this.editor.templates.render(child))}`);
+        return templateAsString(this.childrenTemplate);
     }
 
     static override styles = css`

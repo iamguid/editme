@@ -13,6 +13,7 @@ export const createLinkNode = (link: string, children: TreeNode[] = []): LinkNod
     type: 'group',
     kind: 'link-node',
     view: 'inline',
+    editable: false,
     link,
     children,
 })

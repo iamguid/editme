@@ -1,8 +1,8 @@
 import { ReactiveController } from "lit";
-import { TextNode } from "../text";
-import { produceTraverse } from "../../core/tree";
-import { EditorBlockElement } from "./editor-block";
-import { findNearestParentTreeNode } from "../../core/utils";
+import { TextNode } from "../nodes/text";
+import { produceTraverse } from "../core/tree";
+import { EditorBlockElement } from "./em-editor-block";
+import { findNearestParentTreeNode } from "../core/utils";
 
 export class MutationController implements ReactiveController {
     observer!: MutationObserver

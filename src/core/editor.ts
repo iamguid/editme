@@ -1,5 +1,5 @@
 import { RootNode, createRootNode, rootNodeTemplate } from "../nodes/root";
-import { GroupNode, TreeNode } from "./tree";
+import { GroupNode } from "./tree";
 import { EventBus, EventBusProtocol } from "./event-bus";
 import { InlineTool } from "./inline-tool";
 import { AbstractModule } from "./module";
@@ -11,7 +11,6 @@ import { paragraphNodeTemplate } from "../nodes/paragraph";
 import { textNodeTemplate } from "../nodes/text";
 import { boldInlineTool, boldNodeTemplate } from "../nodes/bold";
 import { italicNodeTemplate } from "../nodes/italic";
-import { editorNodeBlockTemplate } from "../nodes/editor-block/editor-block";
 import { BlockSelectionModule } from "./block-selection";
 import { columnsNodeTemplate } from "../nodes/columns";
 import { containerNodeTemplate } from "../nodes/container";
@@ -54,7 +53,6 @@ export class Editor extends EventBus<EditorProtocol> {
         this.templates.register('text-node', textNodeTemplate);
         this.templates.register('bold-node', boldNodeTemplate);
         this.templates.register('italic-node', italicNodeTemplate);
-        this.templates.register('editor-block', editorNodeBlockTemplate);
 
         // Register core inline tools
         this.registerTool(boldInlineTool);

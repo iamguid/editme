@@ -1,5 +1,5 @@
 import { ReactiveController } from "lit";
-import { EditorBlockElement } from "./editor-block";
+import { EditorBlockElement } from "./em-editor-block";
 
 export class SelectionController implements ReactiveController {
     host: EditorBlockElement;

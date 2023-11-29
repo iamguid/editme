@@ -13,6 +13,7 @@ export const createTextNode = (text: string): TextNode => ({
     type: 'token',
     kind: 'text-node',
     view: 'inline',
+    editable: false,
     text
 })
 
