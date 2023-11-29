@@ -44,8 +44,8 @@
 
     --border: 1px solid var(--dividers);
 
-    --selected-background-color: rgb(174 228 255 / 50%);
-    --selected-border-color: rgb(174 228 255 / 80%);
+    --selected-background-color: rgb(54 144 243 / 20%);
+    --selected-border-color: rgb(54 144 243 / 90%);
 }
 
 .editme {
@@ -53,6 +53,8 @@
     font-family: var(--font-family);
     font-size: var(--font-size-base);
     line-height: var(--line-height-base);
+
+    margin: 10px 10px 10px 125px;
 }
 
 .editme main,
@@ -306,7 +308,8 @@
     border-left: 5px solid transparent;
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
     width: 100%;
-    margin-left: -5px;
+    padding-left: 5px;
+    margin-left: -10px;
 }
 
 .editme .em-block--selected {
@@ -314,18 +317,17 @@
     border-color: var(--selected-border-color);
 }
 
-.editme .em-block__content {
-    padding: 0 10px;
-}
-
 .editme .em-columns {
     display: flex;
-    flex: 1;
     flex-direction: row;
+    gap: var(--md-pad);
 }
 
-.editme .em-columns > * {
+.editme .em-container {
     display: flex;
-    flex: 1;
     flex-direction: column;
+}
+
+.editme .em-spacer {
+    flex: 1;
 }

@@ -16,29 +16,20 @@ export const testtree: RootNode = createRootNode([
     createHeaderNode('Test Header 5', HeaderLevel.H5),
     createHeaderNode('Test Header 6', HeaderLevel.H6),
 
-    createParagraphNode([
-        createTextNode('test text'),
-        createBoldNode([
-            createItalicNode([
-                createTextNode('bold italic')
-            ]),
-        ]),
-    ]),
-
     createColumnsNode([
         createContainerNode([
             createHeaderNode('Column 1', HeaderLevel.H4),
             createParagraphNode([
-                createTextNode('lorem ipsum dolor sit amet'),
+                createTextNode('Nostrud occaecat ex consequat ad aliqua aute consectetur irure quis ut. Laborum officia laborum in sit ad sunt veniam occaecat labore aliquip voluptate proident. Minim anim consectetur proident cillum aliquip qui cillum exercitation culpa proident in et incididunt. Culpa cupidatat qui eiusmod consectetur ex ut veniam tempor tempor.'),
             ]),
             createParagraphNode([
-                createTextNode('lorem ipsum dolor sit amet'),
+                createTextNode('Nostrud occaecat ex consequat ad aliqua aute consectetur irure quis ut. Laborum officia laborum in sit ad sunt veniam occaecat labore aliquip voluptate proident. Minim anim consectetur proident cillum aliquip qui cillum exercitation culpa proident in et incididunt. Culpa cupidatat qui eiusmod consectetur ex ut veniam tempor tempor.'),
             ]),
             createParagraphNode([
-                createTextNode('lorem ipsum dolor sit amet'),
+                createTextNode('Nostrud occaecat ex consequat ad aliqua aute consectetur irure quis ut. Laborum officia laborum in sit ad sunt veniam occaecat labore aliquip voluptate proident. Minim anim consectetur proident cillum aliquip qui cillum exercitation culpa proident in et incididunt. Culpa cupidatat qui eiusmod consectetur ex ut veniam tempor tempor.'),
             ]),
             createParagraphNode([
-                createTextNode('lorem ipsum dolor sit amet'),
+                createTextNode('Nostrud occaecat ex consequat ad aliqua aute consectetur irure quis ut. Laborum officia laborum in sit ad sunt veniam occaecat labore aliquip voluptate proident. Minim anim consectetur proident cillum aliquip qui cillum exercitation culpa proident in et incididunt. Culpa cupidatat qui eiusmod consectetur ex ut veniam tempor tempor.'),
             ]),
         ]),
         createContainerNode([

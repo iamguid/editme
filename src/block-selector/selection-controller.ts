@@ -1,6 +1,7 @@
 import { ReactiveController } from "lit";
 import { BlockSelectorElement } from "./em-block-selector";
-import { GroupNode, findById } from "../core/tree";
+import { findById } from "../core/tree";
+import { findNearestParentTreeNode } from "../core/utils";
 
 export type Rect = [number, number, number, number]; 
 export type Point = [number, number]; 
@@ -51,16 +52,28 @@ export class SelectionController implements ReactiveController {
     }
 
     onMouseDown = (e: MouseEvent) => {
-        const tracedBlocks = this.traceBlocks([e.clientX, e.clientY]).reverse();
+        const tracedBlocks = this.traceBlocks([e.pageX, e.pageY]).reverse();
         this.startPositionElement = tracedBlocks[0];
         this.captureSelection = true;
-        this.startPosition = [e.clientX, e.clientY];
-        this.endPosition = [e.clientX, e.clientY];
+        this.startPosition = [e.pageX, e.pageY];
+        this.endPosition = [e.pageX, e.pageY];
 
+        const composedPath = e.composedPath();
+        const lastElement = composedPath[0] as HTMLElement;
+        const lastElementHasText = Array.from(lastElement.childNodes).some(child => {
+            return (child instanceof Text || child instanceof HTMLSpanElement) && (child.textContent?.trim().length ?? 0) > 0
+        });
+        const nearestTreeNode = findNearestParentTreeNode(this.host.editor.state, lastElement);
+
+        if (!this.startPositionElement || (nearestTreeNode?.view === 'block' && !lastElementHasText)) {
+            this.crossBlockSelection = true;
+        }
+
+        // Reset selection that was made previously
         this.host.editor.blockSelection.selectedNodes = new Set();
     }
 
-    onMouseUp = (e: MouseEvent) => {
+    onMouseUp = () => {
         this.captureSelection = false;
         this.crossBlockSelection = false;
         this.startPosition = [0, 0];
@@ -69,16 +82,24 @@ export class SelectionController implements ReactiveController {
     }
 
     onMouseMove = (e: MouseEvent) => {
-        if (!this.startPositionElement || !this.captureSelection) {
+        if (!this.captureSelection) {
             return;
         }
 
-        const rect = this.startPositionElement.getBoundingClientRect();
-        const r: Rect = [rect.x, rect.y, rect.width, rect.height];
+        if (!this.crossBlockSelection) {
+            if (!this.startPositionElement) {
+                return;
+            }
 
-        if (!this.isPointInRect([e.clientX, e.clientY], r)) {
-            this.crossBlockSelection = true;
-            this.host.editor.inlineSelection.resetSelection();
+            const rect = this.getAbsoluteRect(this.startPositionElement);
+            const endPositionElement = this.traceBlocks([e.pageX, e.pageY]).reverse()[0] ?? null;
+
+            if (!this.isPointInRect([e.pageX, e.pageY], rect) && endPositionElement.hasAttribute('data-node')) {
+                this.crossBlockSelection = true;
+                // TODO: fix selection
+                this.host.editor.inlineSelection.resetSelection();
+                document.getSelection()?.collapseToStart();
+            }
         }
 
         if (!this.crossBlockSelection) {
@@ -87,7 +108,7 @@ export class SelectionController implements ReactiveController {
 
         e.preventDefault();
 
-        this.endPosition = [e.clientX, e.clientY];
+        this.endPosition = [e.pageX, e.pageY];
         this.host.editor.blockSelection.selectedNodes = this.getSelectedNodes();
         this.host.requestUpdate();
     }
@@ -105,16 +126,39 @@ export class SelectionController implements ReactiveController {
     }
 
     private getSelectedNodes() {
-        const nodes = document.querySelectorAll('.em-block[data-node]')
+        const elements = document.querySelectorAll('.em-block[data-node]')
         const result: Set<string> = new Set();
 
-        for (const node of nodes) {
-            const rect = node.getBoundingClientRect();
-            const r1: Rect = [this.x, this.y, this.w, this.h]
-            const r2: Rect = [rect.x, rect.y, rect.width, rect.height]
+        for (const element of elements) {
+            const elementRect = this.getAbsoluteRect(element);
+            const selectionRect: Rect = [this.x, this.y, this.w, this.h]
 
-            if (this.isRectIntersects(r1, r2)) {
-                result.add(node.getAttribute('data-node')!);
+            const hasIntersection = this.isRectIntersects(selectionRect, elementRect);
+            const elementContainsSelection = this.isRectContains(elementRect, selectionRect);
+            const isStartPositionElement = element === this.startPositionElement;
+
+            if (hasIntersection && (!elementContainsSelection || isStartPositionElement)) {
+                result.add(element.getAttribute('data-node')!);
+            }
+        }
+
+        for (const id1 of result) {
+            const node1 = findById(this.host.editor.state, id1);
+
+            if (!node1) {
+                throw new Error(`Node with id ${id1} not found`);
+            }
+
+            for (const id2 of result) {
+                if (id1 === id2) {
+                    continue;
+                }
+
+                const isParent = findById(node1, id2);
+
+                if (isParent) {
+                    result.delete(id2);
+                }
             }
         }
 
@@ -126,14 +170,20 @@ export class SelectionController implements ReactiveController {
         const result: Element[] = [];
 
         for (const element of elements) {
-            const elRect = element.getBoundingClientRect();
-            const r: Rect = [elRect.x, elRect.y, elRect.width, elRect.height];
+            const r = this.getAbsoluteRect(element)
             if (this.isPointInRect(p, r)) {
                 result.push(element);
             }
         }
 
         return result;
+    }
+
+    private getAbsoluteRect(element: Element): Rect {
+        const rect = element.getBoundingClientRect();
+        const bodyRect = document.body.getBoundingClientRect();
+
+        return [rect.x - bodyRect.x, rect.y - bodyRect.y, rect.width, rect.height];
     }
 
     private isRectIntersects(rect1: Rect, rect2: Rect) {

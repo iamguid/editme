@@ -1,4 +1,4 @@
-import { LitElement, css } from 'lit';
+import { LitElement } from 'lit';
 import { provide } from '@lit/context';
 import { customElement } from 'lit/decorators.js';
 import { html } from 'lit/static-html.js';

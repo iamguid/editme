@@ -19,15 +19,15 @@ export const createContainerNode = (children: TreeNode[] = []): ContainerNode =>
 export const containerNodeTemplate: Template<ContainerNode> = (editor, node, render) => {
     const wrapper = (children: TemplateResult) => {
         const classes = {
+            "em-container": true,
             "em-block": true,
-            "em-block--selected": editor.blockSelection.isNodeSelected(node.id)
+            "em-block--selected": editor.blockSelection.isNodeSelected(node.id),
         };
 
         return html`
             <div data-node="${node.id}" class=${classMap(classes)}>
-                <div class="em-block__content">
-                    ${children}
-                </div>
+                ${children}
+                <div class="em-spacer"/>
             </div>
         `;
     }
