@@ -1,16 +1,317 @@
 .editme {
-    font-family: serif;
-    margin: 50px;
+    --xs-pad: 4px;
+    --sm-pad: 8px;
+    --md-pad: 16px;
+    --lg-pad: 20px;
+    --xlg-pad: 40px;
 
-    --selected-color: #f0f0f0;
+    --sm-breakpoint: 400px;
+    --lg-breakpoint: 768px;
+
+    --primary-400: #60a5fa;
+    --primary: #3b82f6;
+    --primary-600: #2563eb;
+    --accent: #64ffda;
+    --red: #f43f5e;
+    --red-600: #dc2626;
+    --yellow: #eab308;
+    --grey: #f7f7f9;
+    --white: #fff;
+    --black: #000;
+
+    --text: rgba(0, 0, 0, 0.8);
+    --secondary: rgba(0, 0, 0, 0.54);
+    --disabled: rgba(0, 0, 0, 0.38);
+    --dividers: rgba(0, 0, 0, 0.12);
+
+    --link-color: var(--primary);
+    --link-hover-color: var(--primary-600);
+
+    --sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --serif: Georgia, Times, 'Times New Roman', serif;
+    --monospace: Menlo, Monaco, Consolas, 'Courier New', monospace;
+    --font-family: var(--serif);
+
+    --font-size-base: 1rem;
+    --font-size-sm: 0.875rem;
+    --font-size-h1: 2.5rem;
+    --font-size-h2: 2rem;
+    --font-size-h3: 1.75rem;
+    --font-size-h4: 1.5rem;
+    --font-size-h5: 1.25rem;
+    --font-size-h6: 1rem;
+    --line-height-base: 1.5;
+
+    --border: 1px solid var(--dividers);
+
+    --selected-background-color: rgb(174 228 255 / 50%);
+    --selected-border-color: rgb(174 228 255 / 80%);
+}
+
+.editme {
+    color: var(--text);
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height-base);
+}
+
+.editme main,
+.editme header,
+.editme footer,
+.editme article,
+.editme section,
+.editme aside,
+.editme details,
+.editme summary {
+    margin: 0 auto;
+    margin-bottom: var(--md-pad);
+    width: 100%;
+}
+
+.editme main {
+    display: block;
+    margin: 0 auto;
+    max-width: var(--lg-breakpoint);
+    padding: 0 var(--md-pad) var(--md-pad);
+}
+
+.editme footer {
+    border-top: var(--border);
+    padding: var(--md-pad) 0;
+    text-align: center;
+}
+
+.editme footer p {
+    margin-bottom: 0;
+}
+
+.editme hr {
+    border: 0;
+    border-top: var(--border);
+    display: block;
+    margin-top: var(--md-pad);
+    margin-bottom: var(--md-pad);
+    width: 100%;
+    box-sizing: content-box;
+    height: 0;
+    overflow: visible;
+}
+
+.editme img {
+    height: auto;
+    max-width: 100%;
+    vertical-align: baseline;
+}
+
+@media screen and (max-width: var(--sm-breakpoint)) {
+    .editme article,
+    .editme section,
+    .editme aside {
+        clear: both;
+        display: block;
+        max-width: 100%;
+    }
+
+    .editme img {
+        margin-right: var(--md-pad);
+    }
+}
+
+.editme embed,
+.editme iframe,
+.editme video {
+    border: 0;
+}
+
+.editme progress {
+    background-repeat: repeat;
+}
+
+.editme p {
+    margin: 0;
+    padding: var(--md-pad) 0;
+}
+
+.editme h1,
+.editme h2,
+.editme h3,
+.editme h4,
+.editme h5,
+.editme h6 {
+    color: inherit;
+    font-family: inherit;
+    line-height: 1.2;
+    font-weight: 500;
+    margin: 0;
+}
+
+.editme h1 {
+    font-size: var(--font-size-h1);
+    padding: var(--sm-pad) 0;
+}
+
+.editme h2 {
+    font-size: var(--font-size-h2);
+    padding: var(--sm-pad) 0;
+}
+
+.editme h3 {
+    font-size: var(--font-size-h3);
+    padding: var(--sm-pad) 0;
+}
+
+.editme h4 {
+    font-size: var(--font-size-h4);
+    padding: var(--sm-pad) 0;
+}
+
+.editme h5 {
+    font-size: var(--font-size-h5);
+    padding: var(--sm-pad) 0;
+}
+
+.editme h6 {
+    font-size: var(--font-size-h6);
+    padding: var(--sm-pad) 0;
+}
+
+.editme small {
+    color: var(--secondary);
+    vertical-align: bottom;
+}
+
+.editme pre {
+    background-color: var(--grey);
+    color: var(--text);
+    display: block;
+    font-family: var(--monospace);
+    font-size: var(--font-size-base);
+    margin: var(--md-pad) 0;
+    padding: var(--md-pad);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+}
+
+.editme code {
+    color: var(--text);
+    font-family: var(--monospace);
+    font-size: var(--font-size-base);
+    line-height: inherit;
+    margin: 0;
+    padding: 0;
+    vertical-align: baseline;
+    word-break: break-all;
+    word-wrap: break-word;
+}
+
+.editme a {
+    color: var(--link-color);
+    text-decoration: none;
+    background-color: transparent;
+}
+
+.editme a:hover,
+.editme a:focus {
+    color: var(--link-hover-color);
+    text-decoration: underline;
+}
+
+.editme dl {
+    margin-bottom: var(--md-pad);
+}
+
+.editme dd {
+    margin-left: var(--xlg-pad);
+}
+
+.editme ul,
+.editme ol {
+    margin-bottom: var(--sm-pad);
+    padding-left: var(--xlg-pad);
+    vertical-align: baseline;
+}
+
+.editme blockquote {
+    border-left: 2px solid var(--text);
+    font-family: var(--serif);
+    font-style: italic;
+    margin: var(--md-pad) 0;
+    padding-left: var(--md-pad);
+}
+
+.editme figcaption {
+    font-family: var(--serif);
+}
+
+.editme u {
+    text-decoration: underline;
+}
+
+.editme s {
+    text-decoration: line-through;
+}
+
+.editme sup {
+    font-size: var(--font-size-sm);
+    vertical-align: super;
+}
+
+.editme sub {
+    font-size: var(--font-size-sm);
+    vertical-align: sub;
+}
+
+.editme mark {
+    background-color: var(--yellow);
+}
+
+.editme table {
+    border-top: var(--border);
+    margin-bottom: var(--md-pad);
+}
+
+.editme caption {
+    padding: var(--sm-pad 0);
+}
+
+.editme thead th {
+    border: 0;
+    border-bottom: 2px solid var(--dividers);
+    text-align: left;
+}
+
+.editme tr {
+    margin-bottom: var(--sm-pad);
+}
+
+.editme th,
+.editme td {
+    border-bottom: var(--border);
+    padding: var(--md-pad);
+    vertical-align: inherit;
+}
+
+.editme tfoot tr {
+    text-align: left;
+}
+
+.editme tfoot td {
+    color: var(--secondary);
+    font-size: var(--sm-pad);
+    font-style: italic;
+    padding: var(--md-pad) var(--xs-pad);
 }
 
 .editme .em-block {
+    border-left: 5px solid transparent;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 
 .editme .em-block--selected {
-    background: var(--selected-color);
+    background: var(--selected-background-color);
+    border-color: var(--selected-border-color);
 }
 
 .editme .em-block__content {
+    padding-left: 6px;
 }

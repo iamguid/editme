@@ -24,7 +24,9 @@ export const paragraphNodeTemplate: Template<ParagraphNode> = (editor, node, ren
 
     return html`
         <div data-node="${node.id}" class=${classMap(classes)}>
-            <p>${node.children.map(child => render(child))}</p>
+            <div class="em-block__content">
+                <p>${node.children.map(child => render(child))}</p>
+            </div>
         </div>
     `;
 }

@@ -35,7 +35,13 @@ export const headerNodeTemplate: Template<HeaderNode> = (editor, node) => {
             "em-block--selected": editor.blockSelection.isNodeSelected(node.id)
         };
 
-        return html`<div data-node="${node.id}" class=${classMap(classes)}>${children}</div>`;
+        return html`
+            <div data-node="${node.id}" class=${classMap(classes)}>
+                <div class="em-block__content">
+                    ${children}
+                </div>
+            </div>
+        `;
     }
 
     switch (node.level) {
