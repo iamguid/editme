@@ -13,6 +13,8 @@ import { boldInlineTool, boldNodeTemplate } from "../nodes/bold";
 import { italicNodeTemplate } from "../nodes/italic";
 import { editorNodeBlockTemplate } from "../nodes/editor-block/editor-block";
 import { BlockSelectionModule } from "./block-selection";
+import { columnsNodeTemplate } from "../nodes/columns";
+import { containerNodeTemplate } from "../nodes/container";
 
 export type Command = (editor: Editor) => GroupNode
 
@@ -46,6 +48,8 @@ export class Editor extends EventBus<EditorProtocol> {
         // Register core templates
         this.templates.register('root-node', rootNodeTemplate);
         this.templates.register('header-node', headerNodeTemplate);
+        this.templates.register('columns-node', columnsNodeTemplate);
+        this.templates.register('container-node', containerNodeTemplate);
         this.templates.register('paragraph-node', paragraphNodeTemplate);
         this.templates.register('text-node', textNodeTemplate);
         this.templates.register('bold-node', boldNodeTemplate);

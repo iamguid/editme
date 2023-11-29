@@ -23,11 +23,11 @@ export class BlockSelectorElement extends LitElement {
     }
 
     get w(): string {
-        return `${this.selectionController.width}px`;
+        return `${this.selectionController.w}px`;
     }
 
     get h(): string {
-        return `${this.selectionController.height}px`;
+        return `${this.selectionController.h}px`;
     }
 
     static override styles = css`
@@ -50,7 +50,7 @@ export class BlockSelectorElement extends LitElement {
     override render() {
         return html`
             <div 
-                class="rect ${this.selectionController.isActivated ? 'show' : 'hide'}" 
+                class="rect ${this.selectionController.crossBlockSelection ? 'show' : 'hide'}" 
                 style=${styleMap({ left: this.x, top: this.y, width: this.w, height: this.h })}
             />
         `;

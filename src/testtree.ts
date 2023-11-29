@@ -1,4 +1,6 @@
 import { createBoldNode } from "./nodes/bold";
+import { createColumnsNode } from "./nodes/columns";
+import { createContainerNode } from "./nodes/container";
 import { createEditorBlockNode } from "./nodes/editor-block/editor-block";
 import { HeaderLevel, createHeaderNode } from "./nodes/header";
 import { createItalicNode } from "./nodes/italic";
@@ -19,6 +21,39 @@ export const testtree: RootNode = createRootNode([
         createBoldNode([
             createItalicNode([
                 createTextNode('bold italic')
+            ]),
+        ]),
+    ]),
+
+    createColumnsNode([
+        createContainerNode([
+            createHeaderNode('Column 1', HeaderLevel.H4),
+            createParagraphNode([
+                createTextNode('lorem ipsum dolor sit amet'),
+            ]),
+            createParagraphNode([
+                createTextNode('lorem ipsum dolor sit amet'),
+            ]),
+            createParagraphNode([
+                createTextNode('lorem ipsum dolor sit amet'),
+            ]),
+            createParagraphNode([
+                createTextNode('lorem ipsum dolor sit amet'),
+            ]),
+        ]),
+        createContainerNode([
+            createHeaderNode('Column 2', HeaderLevel.H4),
+            createParagraphNode([
+                createTextNode('lorem ipsum dolor sit amet'),
+            ]),
+            createParagraphNode([
+                createTextNode('lorem ipsum dolor sit amet'),
+            ]),
+            createParagraphNode([
+                createTextNode('lorem ipsum dolor sit amet'),
+            ]),
+            createParagraphNode([
+                createTextNode('lorem ipsum dolor sit amet'),
             ]),
         ]),
     ]),

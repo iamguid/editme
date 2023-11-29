@@ -39,11 +39,28 @@ export class InlineSelectionModule extends AbstractModule<InlineSelectionProtoco
         return findNearestParentTreeNode(this.editor.state, this.range!.endContainer as HTMLElement);
     }
 
-    updateSelection(node: Node) {
+    updateSelection(node: Node | null) {
+        if (node === null) {
+            this.resetSelection();
+            return;
+        }
+
         this.domNode = node;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const selection = this.selection = (node as any).getSelection() as globalThis.Selection;
         this.range = selection.getRangeAt(0);
+        this.emit('selectionChanged', { type: selectionChangedEvent });
+    }
+
+    resetSelection() {
+        if (this.selection) {
+            this.selection.collapseToStart();
+        }
+
+        this.domNode = null;
+        this.editmeNode = null;
+        this.selection = null;
+        this.range = null;
         this.emit('selectionChanged', { type: selectionChangedEvent });
     }
 

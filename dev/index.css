@@ -129,7 +129,7 @@
 
 .editme p {
     margin: 0;
-    padding: var(--md-pad) 0;
+    padding: var(--sm-pad) 0;
 }
 
 .editme h1,
@@ -305,6 +305,8 @@
 .editme .em-block {
     border-left: 5px solid transparent;
     transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+    width: 100%;
+    margin-left: -5px;
 }
 
 .editme .em-block--selected {
@@ -313,5 +315,17 @@
 }
 
 .editme .em-block__content {
-    padding-left: 6px;
+    padding: 0 10px;
+}
+
+.editme .em-columns {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+}
+
+.editme .em-columns > * {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
 }
