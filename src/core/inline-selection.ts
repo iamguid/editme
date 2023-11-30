@@ -11,16 +11,18 @@ export interface InlineSelectionProtocol extends EventBusProtocol {
 }
 
 export class InlineSelectionModule extends AbstractModule<InlineSelectionProtocol> {
-    domNode: globalThis.Node | null = null;
-    editmeNode: TreeNode | null = null;
     selection: globalThis.Selection | null = null;
-    range: globalThis.Range | null = null;
 
     get isSomethingSelected(): boolean {
-        return this.domNode !== null
-            && this.range !== null
-            && this.selection !== null
-            && !this.range.collapsed;
+        return this.selection !== null && !this.selection.isCollapsed;
+    }
+
+    get firstRange(): Range | null {
+        if (!this.isSomethingSelected) {
+            return null;
+        }
+
+        return this.selection!.getRangeAt(0);
     }
 
     get startNode(): TreeNode | null {
@@ -28,7 +30,7 @@ export class InlineSelectionModule extends AbstractModule<InlineSelectionProtoco
             return null;
         }
 
-        return findNearestParentTreeNode(this.editor.state, this.range!.startContainer as HTMLElement);
+        return findNearestParentTreeNode(this.editor.state, this.firstRange!.startContainer as HTMLElement);
     }
 
     get endNode(): TreeNode | null {
@@ -36,31 +38,26 @@ export class InlineSelectionModule extends AbstractModule<InlineSelectionProtoco
             return null;
         }
 
-        return findNearestParentTreeNode(this.editor.state, this.range!.endContainer as HTMLElement);
+        return findNearestParentTreeNode(this.editor.state, this.firstRange!.endContainer as HTMLElement);
     }
 
-    updateSelection(node: Node | null) {
-        if (node === null) {
+    updateSelection(selection: globalThis.Selection | null) {
+        if (!selection) {
             this.resetSelection();
             return;
         }
 
-        this.domNode = node;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const selection = this.selection = (node as any).getSelection() as globalThis.Selection;
-        this.range = selection.getRangeAt(0);
+        this.selection = selection;
         this.emit('selectionChanged', { type: selectionChangedEvent });
     }
 
     resetSelection() {
-        if (this.selection) {
-            this.selection.collapseToStart();
+        if (!this.selection) {
+            return;
         }
 
-        this.domNode = null;
-        this.editmeNode = null;
+        this.selection.collapseToStart();
         this.selection = null;
-        this.range = null;
         this.emit('selectionChanged', { type: selectionChangedEvent });
     }
 
@@ -70,12 +67,12 @@ export class InlineSelectionModule extends AbstractModule<InlineSelectionProtoco
         }
 
         const start = this.startNode as TextNode;
-        const end = this.editmeNode as TextNode;
+        const end = this.endNode as TextNode;
 
         if (!start.text || !end.text) {
             return;
         }
 
-        this.editor.execute(editor => surround(editor.state, start, end, this.range!.startOffset, this.range!.endOffset, group));
+        this.editor.execute(editor => surround(editor.state, start, end, this.firstRange!.startOffset, this.firstRange!.endOffset, group));
     }
 }

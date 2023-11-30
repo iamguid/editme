@@ -18,7 +18,7 @@ export class InlineToolbarElement extends LitElement {
     containerRef: Ref<HTMLDivElement> = createRef();
 
     get selectionRect() {
-        return this.editor.inlineSelection.range?.getBoundingClientRect();
+        return this.editor.inlineSelection.firstRange?.getBoundingClientRect();
     }
 
     get containerRect() {

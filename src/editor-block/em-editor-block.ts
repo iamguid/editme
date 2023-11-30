@@ -8,9 +8,7 @@ import { editorContext } from '../editor-context';
 import { Editor } from '../core/editor';
 import { stringHash, templateAsString } from '../core/utils';
 import { MutationController } from './mutation-controller';
-import { SelectionController } from './selection-controller';
 import { PasteController } from './paste-controller';
-import { GroupNode } from '../core/tree';
 
 @customElement('em-editor-block')
 export class EditorBlockElement extends LitElement {
@@ -23,7 +21,6 @@ export class EditorBlockElement extends LitElement {
     editorRef: Ref<HTMLDivElement> = createRef();
 
     mutationController = new MutationController(this);
-    selectionController = new SelectionController(this);
     pasteController = new PasteController(this);
 
     onInput = () => {

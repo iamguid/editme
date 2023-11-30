@@ -1,8 +1,8 @@
 import { ReactiveController } from "lit";
-import { EditmeElement } from "./em-editme";
+import { BlockSelectorElement } from "./em-block-selector";
 
-export class StateController implements ReactiveController {
-    constructor(private host: EditmeElement) {
+export class UpdateController implements ReactiveController {
+    constructor(private host: BlockSelectorElement) {
         host.addController(this);
     }
 

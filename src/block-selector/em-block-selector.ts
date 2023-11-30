@@ -1,33 +1,40 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, PropertyValueMap, css, html } from "lit";
 import { consume } from "@lit/context";
 import { customElement } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
+import { Ref } from "lit/directives/ref.js";
 
 import { editorContext } from "../editor-context";
 import { Editor } from "../core/editor";
 import { SelectionController } from "./selection-controller";
+import { rootContext } from "../root-context";
+import { UpdateController } from "./update-controller";
 
 @customElement('em-block-selector')
 export class BlockSelectorElement extends LitElement {
     @consume({context: editorContext})
     editor!: Editor;
 
+    @consume({context: rootContext})
+    root!: Ref<HTMLDivElement>;
+
     selectionController = new SelectionController(this);
+    updateController = new UpdateController(this);
 
     get x(): string {
-        return `${this.selectionController.x}px`;
+        return `${this.editor.blockSelection.x}px`;
     }
 
     get y(): string {
-        return `${this.selectionController.y}px`;
+        return `${this.editor.blockSelection.y}px`;
     }
 
     get w(): string {
-        return `${this.selectionController.w}px`;
+        return `${this.editor.blockSelection.w}px`;
     }
 
     get h(): string {
-        return `${this.selectionController.h}px`;
+        return `${this.editor.blockSelection.h}px`;
     }
 
     static override styles = css`
@@ -50,7 +57,7 @@ export class BlockSelectorElement extends LitElement {
     override render() {
         return html`
             <div 
-                class="rect ${this.selectionController.crossBlockSelection ? 'show' : 'hide'}" 
+                class="rect ${this.editor.blockSelection.isCrossBlockSelection ? 'show' : 'hide'}" 
                 style=${styleMap({ left: this.x, top: this.y, width: this.w, height: this.h })}
             />
         `;

@@ -1,5 +1,8 @@
 import { TemplateResult } from "lit";
-import { TreeNode, findById } from "./tree";
+import { GroupNode, TreeNode, findById } from "./tree";
+
+export type Rect = [number, number, number, number]; 
+export type Point = [number, number]; 
 
 export const randomUUID = (): string => {
     // desired length of Id
@@ -69,4 +72,59 @@ export const stringHash = (str: string) => {
     }
      
     return hash;
+}
+
+export const traceNodes = (p: Point, rects: Map<string, Rect>, root: GroupNode): string[] => {
+    const result: string[] = [];
+
+    for (const [id, rect] of rects) {
+        if (isPointInRect(p, rect)) {
+            result.push(id);
+        }
+    }
+
+    result.sort((a, b) => {
+        if (a === b) {
+            return 0;
+        }
+
+        const aNode = findById(root, a) as GroupNode;
+        const isAParentOfB = findById(aNode, b) !== null;
+
+        if (isAParentOfB) {
+            return -1;
+        } else {
+            return 1;
+        }
+    });
+
+    return result;
+}
+
+export const getAbsoluteRect = (element: Element): Rect => {
+    const rect = element.getBoundingClientRect();
+    const bodyRect = document.body.getBoundingClientRect();
+
+    return [rect.x - bodyRect.x, rect.y - bodyRect.y, rect.width, rect.height];
+}
+
+export const isRectIntersects = (rect1: Rect, rect2: Rect): boolean => {
+    return rect1[0] < rect2[0] + rect2[2] &&
+        rect1[0] + rect1[2] > rect2[0] &&
+        rect1[1] < rect2[1] + rect2[3] &&
+        rect1[1] + rect1[3] > rect2[1];
+}
+
+export const isRectContains = (rect1: Rect, rect2: Rect): boolean => {
+    return rect1[0] <= rect2[0] &&
+        rect1[0] + rect1[2] >= rect2[0] + rect2[2] &&
+        rect1[1] <= rect2[1] &&
+        rect1[1] + rect1[3] >= rect2[1] + rect2[3];
+}
+
+export const isPointInRect = (point: Point, rect: Rect): boolean => {
+    return point[0] >= rect[0] &&
+        point[0] <= rect[0] + rect[2] &&
+        point[1] >= rect[1] &&
+        point[1] <= rect[1] + rect[3];
 }
