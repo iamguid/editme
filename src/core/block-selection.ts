@@ -38,14 +38,10 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
         for (const id of this._blocksRects.keys()) {
             const node = findById(this.editor.state, id)!;
 
-            if (node.view !== 'block') {
+            if (node.view !== 'block' || node.kind === 'root-node') {
                 this._blocksRects.delete(id);
             }
         }
-    }
-
-    get nodesRects() {
-        return this._nodesRects;
     }
     
     get x(): number {
@@ -104,9 +100,13 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
 
         if (!this.startPositionNodeId) {
             this.crossBlockSelection = true;
+            return;
         }
 
-        // TODO: reimplement logic for initial cross block selection
+        const startPositionNode = findById(this.editor.state, this.startPositionNodeId!)!;
+        if (startPositionNode.type === 'group' && !startPositionNode.children.some(child => child.kind === 'text-node')) {
+            this.crossBlockSelection = true;
+        }
     }
 
     onMouseUp(p: Point) {
@@ -136,7 +136,12 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
 
         if (!isPointInRect(p, startPositionNodeRect)) {
             // TODO: fix selection
-            document.getSelection()?.collapseToStart();
+            const selection = document.getSelection();
+
+            if (selection && !selection.isCollapsed) {
+                selection.collapseToStart();
+            }
+
             this.crossBlockSelection = true;
         }
     }
@@ -146,10 +151,11 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
 
         for (const [id, rect] of this._blocksRects) {
             const hasIntersection = isRectIntersects(this.selectionRect, rect);
-            const elementContainsSelection = isRectContains(rect, this.selectionRect);
-            const isStartPositionElement = id === this.startPositionNodeId;
+            const rectContainsSelection = isRectContains(rect, this.selectionRect);
+            const isStartPositionNode = id === this.startPositionNodeId;
+            const startPositionNode = findById(this.editor.state, this.startPositionNodeId!)!;
 
-            if (hasIntersection && (!elementContainsSelection || isStartPositionElement)) {
+            if (hasIntersection && !rectContainsSelection || (isStartPositionNode && startPositionNode.type !== 'group')) {
                 result.add(id);
             }
         }

@@ -331,3 +331,7 @@
 .editme .em-spacer {
     flex: 1;
 }
+
+.editme .em-editable {
+    outline: none;
+}

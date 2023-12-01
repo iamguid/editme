@@ -46,6 +46,7 @@ export class EditorBlockElement extends LitElement {
     override render() {
         return html`
             <div
+                class="em-editable"
                 ${ref(this.editorRef)}
                 @input=${this.onInput}
                 contenteditable

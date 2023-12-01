@@ -19,7 +19,7 @@ export class SelectionController implements ReactiveController {
         }
 
         this.host.editor.blockSelection.nodesRects = rects;
-        this.host.editor.blockSelection.onMouseDown([e.pageX, e.pageY])
+        this.host.editor.blockSelection.onMouseDown([e.pageX, e.pageY]);
     }
 
     onMouseUp = (e: MouseEvent) => {
@@ -31,6 +31,9 @@ export class SelectionController implements ReactiveController {
 
         if (this.host.editor.blockSelection.isCrossBlockSelection) {
             e.preventDefault();
+            
+            // Reset focus on activeElement
+            (document?.activeElement as HTMLElement | null)?.blur();
         }
     }
 
