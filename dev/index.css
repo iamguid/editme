@@ -334,4 +334,5 @@
 
 .editme .em-editable {
     outline: none;
+    white-space: pre-wrap; /* important rule for handle nbsp, see https://stackoverflow.com/a/60804106/19516518 */
 }

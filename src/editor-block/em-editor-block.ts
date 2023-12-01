@@ -31,12 +31,6 @@ export class EditorBlockElement extends LitElement {
         return templateAsString(this.childrenTemplate);
     }
 
-    static override styles = css`
-        div {
-            white-space: pre-wrap; /* important rule for handle nbsp, see https://stackoverflow.com/a/60804106/19516518 */
-        }
-    `;
-
     override updated = () => {
         // Fix bug with rerendering innerHTML
         this.mutationController.ignoreNextMutation();
