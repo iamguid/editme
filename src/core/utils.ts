@@ -101,11 +101,22 @@ export const traceNodes = (p: Point, rects: Map<string, Rect>, root: GroupNode):
     return result;
 }
 
-export const getAbsoluteRect = (element: Element): Rect => {
-    const rect = element.getBoundingClientRect();
-    const bodyRect = document.body.getBoundingClientRect();
+export const getAbsoluteRect = (element: HTMLElement): Rect => {
+    const w = element.clientWidth;
+    const h = element.clientHeight;
 
-    return [rect.x - bodyRect.x, rect.y - bodyRect.y, rect.width, rect.height];
+    let x = 0;
+    let y = 0;
+
+    let el: HTMLElement | null = element
+
+    while(el) {
+        x += el.offsetLeft;
+        y += el.offsetTop;
+        el = el.offsetParent as HTMLElement;
+    }
+
+    return [x, y, w, h];
 }
 
 export const isRectIntersects = (rect1: Rect, rect2: Rect): boolean => {

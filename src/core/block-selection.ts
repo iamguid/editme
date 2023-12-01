@@ -14,11 +14,11 @@ export interface BlockSelectionProtocol extends EventBusProtocol {
 export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol> {
     private _selectedBlocks: Set<string> = new Set();
     private _nodesRects: Map<string, Rect> = new Map();
+    private _blocksRects: Map<string, Rect> = new Map();
 
     private crossBlockSelection = false;
     private captureSelection = false;
     private startPositionNodeId: string | null = null;
-    private currentPositionNodeId: string | null = null;
     private startPosition: Point = [0, 0]
     private currentPosition: Point = [0, 0];
 
@@ -33,6 +33,15 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
 
     set nodesRects(rects: Map<string, Rect>) {
         this._nodesRects = rects;
+        this._blocksRects = new Map<string, Rect>(this._nodesRects);
+
+        for (const id of this._blocksRects.keys()) {
+            const node = findById(this.editor.state, id)!;
+
+            if (node.view !== 'block') {
+                this._blocksRects.delete(id);
+            }
+        }
     }
 
     get nodesRects() {
@@ -84,19 +93,8 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
     }
 
     onMouseDown(p: Point) {
-        const blocksRects = new Map<string, Rect>(this._nodesRects);
-
-        for (const id of blocksRects.keys()) {
-            const node = findById(this.editor.state, id)!;
-
-            if (node.view !== 'block') {
-                blocksRects.delete(id);
-            }
-        }
-
-        const tracedBlocks = traceNodes(p, blocksRects, this.editor.state).reverse();
+        const tracedBlocks = traceNodes(p, this._blocksRects, this.editor.state).reverse();
         this.startPositionNodeId = tracedBlocks[0];
-        this.currentPositionNodeId = tracedBlocks[0];
         this.captureSelection = true;
         this.startPosition = p;
         this.currentPosition = p;
@@ -115,7 +113,6 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
         this.captureSelection = false;
         this.crossBlockSelection = false;
         this.startPositionNodeId = null;
-        this.currentPositionNodeId = null;
         this.startPosition = [0, 0];
         this.currentPosition = [0, 0];
 
@@ -147,11 +144,9 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
     private getSelectedNodes() {
         const result: Set<string> = new Set();
 
-        for (const [id, rect] of this._nodesRects) {
-            const selectionRect: Rect = [this.x, this.y, this.w, this.h]
-
-            const hasIntersection = isRectIntersects(selectionRect, rect);
-            const elementContainsSelection = isRectContains(rect, selectionRect);
+        for (const [id, rect] of this._blocksRects) {
+            const hasIntersection = isRectIntersects(this.selectionRect, rect);
+            const elementContainsSelection = isRectContains(rect, this.selectionRect);
             const isStartPositionElement = id === this.startPositionNodeId;
 
             if (hasIntersection && (!elementContainsSelection || isStartPositionElement)) {

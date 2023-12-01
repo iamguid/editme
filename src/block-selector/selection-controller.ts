@@ -14,7 +14,7 @@ export class SelectionController implements ReactiveController {
         const rects = new Map<string, Rect>();
 
         for (const element of elements) {
-            const rect = getAbsoluteRect(element);
+            const rect = getAbsoluteRect(element as HTMLElement);
             rects.set(element.getAttribute('data-node')!, rect);
         }
 
