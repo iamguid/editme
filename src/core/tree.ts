@@ -172,13 +172,17 @@ export const surround = (root: GroupNode, startNode: TextNode, endNode: TextNode
     const endPath = findPathToNode(root, endNode.id);
 
     let commonParentIndex = 0;
-    while (
-        commonParentIndex + 1 < startPath.length
-        && commonParentIndex + 1 < endPath.length
-        && startPath[commonParentIndex + 1] === endPath[commonParentIndex + 1]
-        && startNode !== endNode
-    ) {
-        commonParentIndex++;
+
+    for (let i = 0; i < startPath.length && i < endPath.length; i++) {
+        if (startPath[i] === endPath[i]) {
+            commonParentIndex = i;
+        } else {
+            break;
+        }
+    }
+
+    if (startNode === endNode) {
+        commonParentIndex -= 1
     }
 
     const commonParent = startPath[commonParentIndex] as GroupNode;

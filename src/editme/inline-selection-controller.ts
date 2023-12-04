@@ -1,6 +1,6 @@
 import { ReactiveController, ReactiveControllerHost } from "lit";
-import { EditmeElement } from "./em-editme";
 import { Editor } from "../core/editor";
+import { EditmeElement } from "./em-editme";
 
 export interface BlockSelectionControllerHost extends ReactiveControllerHost {
     editor: Editor

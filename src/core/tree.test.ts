@@ -33,6 +33,38 @@ describe("tree", () => {
         })
     })
 
+    it("surround should return correct result (left text, right text, text inside bold)", () => {
+        const tree = createRootNode([
+            createBoldNode([
+                createTextNode('Hello world')
+            ])
+        ])
+
+        const bold = tree.children[0] as GroupNode;
+        const text = bold.children[0] as TextNode;
+
+        const result = surround(tree, text, text, 3, 9, createBoldNode());
+
+        expect(result).to.containSubset({
+            type: 'group',
+            children: [
+                {
+                    type: 'group',
+                    children: [
+                        { type: 'token', text: 'Hel' },
+                        {
+                            type: 'group',
+                            children: [
+                                { type: 'token', text: 'lo wor' },
+                            ],
+                        },
+                        { type: 'token', text: 'ld' },
+                    ]
+                }
+            ]
+        })
+    })
+
     it("surround should return correct result (left text, right tree)", () => {
         const tree = createRootNode([
             createTextNode('AABB'),
