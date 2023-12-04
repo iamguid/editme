@@ -1,4 +1,4 @@
-import { LitElement, TemplateResult, css } from 'lit';
+import { LitElement, TemplateResult } from 'lit';
 import { consume } from '@lit/context';
 import { customElement, property } from 'lit/decorators.js';
 import { html } from 'lit/static-html.js';

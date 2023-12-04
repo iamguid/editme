@@ -7,11 +7,12 @@ import { Ref, createRef, ref } from 'lit/directives/ref.js';
 import { editorContext } from '../editor-context';
 import { Editor } from '../core/editor';
 import { testtree } from '../testtree';
-import { StateController } from './state-controller';
-
-import '../inline-toolbar/em-inline-toolbar';
-import '../block-selector/em-block-selector';
 import { rootContext } from '../root-context';
+import { InlineSelectionController } from './inline-selection-controller';
+import { BlockSelectionController } from './block-selection-controller';
+
+import './em-inline-toolbar';
+import './em-block-selector';
 
 @customElement('em-editme')
 export class EditmeElement extends LitElement {
@@ -23,7 +24,22 @@ export class EditmeElement extends LitElement {
     @provide({ context: rootContext })
     root = this.editmeRef;
 
-    stateController = new StateController(this);
+    inlineSelectionController = new InlineSelectionController(this);
+    blockSelectionController = new BlockSelectionController(this);
+
+    onSomethingChanged = () => {
+        this.requestUpdate();
+    }
+
+    firstUpdated(): void {
+        this.editor.on('stateChanged', this.onSomethingChanged);
+        this.editor.blockSelection.on('selectionChanged', this.onSomethingChanged);
+    }
+
+    hostDisconnected(): void {
+        this.editor.off('stateChanged', this.onSomethingChanged);
+        this.editor.blockSelection.off('selectionChanged', this.onSomethingChanged);
+    }
 
     override render() {
         return html`

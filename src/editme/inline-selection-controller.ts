@@ -1,7 +1,12 @@
-import { ReactiveController } from "lit";
+import { ReactiveController, ReactiveControllerHost } from "lit";
 import { EditmeElement } from "./em-editme";
+import { Editor } from "../core/editor";
 
-export class SelectionController implements ReactiveController {
+export interface BlockSelectionControllerHost extends ReactiveControllerHost {
+    editor: Editor
+}
+
+export class InlineSelectionController implements ReactiveController {
     host: EditmeElement;
 
     constructor(host: EditmeElement) {

@@ -5,15 +5,12 @@ import { editorContext } from '../editor-context';
 import { consume } from '@lit/context';
 import { styleMap } from 'lit/directives/style-map.js';
 import { Editor } from '../core/editor';
-import { SelectionController } from './selection-controller';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
 
 @customElement('em-inline-toolbar')
 export class InlineToolbarElement extends LitElement {
     @consume({context: editorContext})
     editor!: Editor;
-
-    selectionController = new SelectionController(this);
 
     containerRef: Ref<HTMLDivElement> = createRef();
 

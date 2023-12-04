@@ -1,6 +1,6 @@
 import { EventBusProtocol } from "./event-bus";
 import { AbstractModule } from "./module";
-import { TreeNode, findById } from "./tree";
+import { findById } from "./tree";
 import { Point, Rect, isPointInRect, isRectContains, isRectIntersects, traceNodes } from "./utils";
 
 export const selectionChangedEvent = Symbol('selection_changed');
@@ -104,12 +104,12 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
         }
 
         const startPositionNode = findById(this.editor.state, this.startPositionNodeId!)!;
-        if (startPositionNode.type === 'group' && !startPositionNode.children.some(child => child.kind === 'text-node')) {
+        if (startPositionNode.type === 'group' && !startPositionNode.children.some(child => child.view === 'inline')) {
             this.crossBlockSelection = true;
         }
     }
 
-    onMouseUp(p: Point) {
+    onMouseUp() {
         this.captureSelection = false;
         this.crossBlockSelection = false;
         this.startPositionNodeId = null;

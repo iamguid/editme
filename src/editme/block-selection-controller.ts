@@ -1,11 +1,18 @@
-import { ReactiveController } from "lit";
-import { BlockSelectorElement } from "./em-block-selector";
+import { ReactiveController, ReactiveControllerHost } from "lit";
+import { Ref } from "lit/directives/ref.js";
+
 import { Rect, getAbsoluteRect } from "../core/utils";
+import { Editor } from "../core/editor";
 
-export class SelectionController implements ReactiveController {
-    host: BlockSelectorElement;
+export interface BlockSelectionControllerHost extends ReactiveControllerHost {
+    editor: Editor
+    root: Ref<HTMLDivElement>
+}
 
-    constructor(host: BlockSelectorElement) {
+export class BlockSelectionController implements ReactiveController {
+    host: BlockSelectionControllerHost;
+
+    constructor(host: BlockSelectionControllerHost) {
         (this.host = host).addController(this);
     }
 
@@ -22,8 +29,8 @@ export class SelectionController implements ReactiveController {
         this.host.editor.blockSelection.onMouseDown([e.pageX, e.pageY]);
     }
 
-    onMouseUp = (e: MouseEvent) => {
-        this.host.editor.blockSelection.onMouseUp([e.pageX, e.pageY])
+    onMouseUp = () => {
+        this.host.editor.blockSelection.onMouseUp()
     }
 
     onMouseMove = (e: MouseEvent) => {
