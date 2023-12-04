@@ -101,19 +101,29 @@ export const traceNodes = (p: Point, rects: Map<string, Rect>, root: GroupNode):
     return result;
 }
 
-export const getAbsoluteRect = (element: HTMLElement): Rect => {
-    const w = element.clientWidth;
-    const h = element.clientHeight;
-
+export const getAbsoluteRect = (element: Node): Rect => {
+    let w = 0;
+    let h = 0;
     let x = 0;
     let y = 0;
 
-    let el: HTMLElement | null = element
+    let el: Node | null = element
+    let isFound = false;
 
     while(el) {
-        x += el.offsetLeft;
-        y += el.offsetTop;
-        el = el.offsetParent as HTMLElement;
+        if (el instanceof HTMLElement) {
+            if (!isFound) {
+                w = el.clientWidth;
+                h = el.clientWidth;
+                isFound = true;
+            }
+
+            x += el.offsetLeft ?? 0;
+            y += el.offsetTop ?? 0;
+            el = el.offsetParent;
+        } else {
+            el = el.parentElement;
+        }
     }
 
     return [x, y, w, h];

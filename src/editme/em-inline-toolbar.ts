@@ -6,6 +6,7 @@ import { consume } from '@lit/context';
 import { styleMap } from 'lit/directives/style-map.js';
 import { Editor } from '../core/editor';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
+import { getAbsoluteRect } from '../core/utils';
 
 @customElement('em-inline-toolbar')
 export class InlineToolbarElement extends LitElement {
@@ -15,11 +16,20 @@ export class InlineToolbarElement extends LitElement {
     containerRef: Ref<HTMLDivElement> = createRef();
 
     get selectionRect() {
-        return this.editor.inlineSelection.firstRange?.getBoundingClientRect();
+        if (this.editor.inlineSelection.firstRange?.commonAncestorContainer) {
+            const r = this.editor.inlineSelection.firstRange?.getBoundingClientRect();
+            return [r.x + window.scrollX, r.y + window.scrollY, r.width, r.height];
+        }
+
+        return [0, 0, 0, 0]
     }
 
     get containerRect() {
-        return this.containerRef.value?.getBoundingClientRect();
+        if (this.containerRef.value) {
+            return getAbsoluteRect(this.containerRef.value as HTMLElement);
+        }
+
+        return [0, 0, 0, 0]
     }
 
     get toolbarX() {
@@ -27,7 +37,7 @@ export class InlineToolbarElement extends LitElement {
             return 0;
         }
 
-        return `${this.selectionRect!.left + this.selectionRect!.width / 2 - this.containerRect!.width / 2}px`;
+        return `${this.selectionRect[0] + this.selectionRect[2] / 2 - this.containerRect[2] / 2}px`;
     }
 
     get toolbarY() {
@@ -35,7 +45,19 @@ export class InlineToolbarElement extends LitElement {
             return 0;
         }
 
-        return `${this.selectionRect!.top + this.selectionRect!.height + 5}px`;
+        return `${this.selectionRect[1] + this.selectionRect[3] + 5}px`;
+    }
+
+    private onSomethingChanged = () => {
+        this.requestUpdate();
+    }
+
+    protected firstUpdated(): void {
+        this.editor.inlineSelection.on('selectionChanged', this.onSomethingChanged);
+    }
+
+    disconnectedCallback(): void {
+        this.editor.inlineSelection.off('selectionChanged', this.onSomethingChanged);
     }
     
     static override styles = css`
