@@ -6,49 +6,42 @@ import { consume } from '@lit/context';
 import { styleMap } from 'lit/directives/style-map.js';
 import { Editor } from '../core/editor';
 import { Ref, createRef, ref } from 'lit/directives/ref.js';
-import { getAbsoluteRect } from '../core/utils';
+import { Rect, getAbsoluteRect } from '../core/utils';
 
 @customElement('em-inline-toolbar')
 export class InlineToolbarElement extends LitElement {
     @consume({context: editorContext})
     editor!: Editor;
 
+    selectionRect: Rect = [0, 0, 0, 0];
+    containerRect: Rect = [0, 0, 0, 0];
+
     containerRef: Ref<HTMLDivElement> = createRef();
 
-    get selectionRect() {
+    private updateSelectionRect() {
         if (this.editor.inlineSelection.firstRange?.commonAncestorContainer) {
             const r = this.editor.inlineSelection.firstRange?.getBoundingClientRect();
-            return [r.x + window.scrollX, r.y + window.scrollY, r.width, r.height];
+            this.selectionRect = [r.x + window.scrollX, r.y + window.scrollY, r.width, r.height];
         }
-
-        return [0, 0, 0, 0]
     }
 
-    get containerRect() {
+    private updateContainerRect() {
         if (this.containerRef.value) {
-            return getAbsoluteRect(this.containerRef.value as HTMLElement);
+            this.containerRect = getAbsoluteRect(this.containerRef.value as HTMLElement);
         }
-
-        return [0, 0, 0, 0]
     }
 
     get toolbarX() {
-        if (!this.containerRect || !this.selectionRect) {
-            return 0;
-        }
-
         return `${this.selectionRect[0] + this.selectionRect[2] / 2 - this.containerRect[2] / 2}px`;
     }
 
     get toolbarY() {
-        if (!this.containerRect || !this.selectionRect) {
-            return 0;
-        }
-
         return `${this.selectionRect[1] + this.selectionRect[3] + 5}px`;
     }
 
     private onSomethingChanged = () => {
+        this.updateSelectionRect();
+        this.updateContainerRect();
         this.requestUpdate();
     }
 
@@ -70,12 +63,12 @@ export class InlineToolbarElement extends LitElement {
             background-color: #fff;
             border: 1px solid #ccc;
             padding: 3px 5px;
-            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+            transition: opacity 0.15s ease-out, transform 0.15s ease-out;
         }
 
         .hidden {
             opacity: 0;
-            transform: translateY(5px);
+            transform: translateY(10px);
         }
 
         .show {
