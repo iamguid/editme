@@ -65,7 +65,51 @@ export const findPathToNode = (node: TreeNode, id: string): TreeNode[] => {
     return []
 }
 
-export const copyNode = (node: TreeNode): TreeNode => {
+export const extractText = (node: TreeNode): string => {
+    const stack: TreeNode[] = [node];
+    const texts: string[] = [];
+
+    while (stack.length > 0) {
+        const current = stack.pop()!;
+
+        if (current.kind === 'text-node') {
+            texts.push((current as TextNode).text)
+            continue
+        }
+
+        if (current.type === 'group') {
+            stack.push(...[...current.children].reverse())
+        }
+
+        if (current.type === 'group' && current.view === 'block') {
+            texts.push('\n')
+        }
+    }
+
+    return texts.join('')
+}
+
+export const orderSetOfNodes = (node: TreeNode, set: Set<string>): TreeNode[] => {
+    const stack: TreeNode[] = [node];
+    const result: TreeNode[] = [];
+
+    while (stack.length > 0) {
+        const current = stack.pop()!;
+
+        if (set.has(current.id)) {
+            result.push(current)
+            continue
+        }
+
+        if (current.type === 'group') {
+            stack.push(...[...current.children].reverse())
+        }
+    }
+
+    return result
+}
+
+export const cloneNode = (node: TreeNode): TreeNode => {
     if (node.type === 'group') {
         return {
             ...node,
@@ -80,11 +124,11 @@ export const copyNode = (node: TreeNode): TreeNode => {
     }
 }
 
-export const deepCopyNode = (node: TreeNode): TreeNode => {
-    const result = copyNode(node);
+export const deepCloneNode = (node: TreeNode): TreeNode => {
+    const result = cloneNode(node);
 
     if (result.type === 'group' && node.type === 'group') {
-        result.children = node.children.map(deepCopyNode)
+        result.children = node.children.map(deepCloneNode)
     } else {
         return result;
     }
@@ -258,7 +302,7 @@ export const sliceByTextNode = (root: GroupNode, sliceNode: GroupNode, textNode:
             const sliceNodeSubling = path[0];
 
             let current: TreeNode = path.pop()!;
-            let treeCopy = copyNode(current);
+            let treeCopy = cloneNode(current);
             let parent = path[path.length - 1] as GroupNode;
 
             if (mode === 'left') {
@@ -273,11 +317,11 @@ export const sliceByTextNode = (root: GroupNode, sliceNode: GroupNode, textNode:
 
             while (path.length > 0) {
                 const childIndex = parent.children.findIndex(child => child.id === current.id);
-                const newParentCopy = copyNode(parent) as GroupNode;
+                const newParentCopy = cloneNode(parent) as GroupNode;
 
                 if (mode === 'left') {
                     for (let i = 0; i < childIndex; i++) {
-                        newParentCopy.children.push(deepCopyNode(parent.children[i]));
+                        newParentCopy.children.push(deepCloneNode(parent.children[i]));
                     }
 
                     newParentCopy.children.push(treeCopy)
@@ -289,7 +333,7 @@ export const sliceByTextNode = (root: GroupNode, sliceNode: GroupNode, textNode:
                     newParentCopy.children.push(treeCopy)
 
                     for (let i = childIndex + 1; i < parent.children.length ; i++) {
-                        newParentCopy.children.push(deepCopyNode(parent.children[i]));
+                        newParentCopy.children.push(deepCloneNode(parent.children[i]));
                     }
 
                     parent.children.splice(childIndex + 1)

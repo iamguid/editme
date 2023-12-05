@@ -13,6 +13,7 @@ import { BlockSelectionController } from './block-selection-controller';
 
 import './em-inline-toolbar';
 import './em-block-selector';
+import { ClipboardController } from './clipboard-controller';
 
 @customElement('em-editme')
 export class EditmeElement extends LitElement {
@@ -26,6 +27,7 @@ export class EditmeElement extends LitElement {
 
     inlineSelectionController = new InlineSelectionController(this);
     blockSelectionController = new BlockSelectionController(this);
+    clipboardController = new ClipboardController(this);
 
     onSomethingChanged = () => {
         this.requestUpdate();

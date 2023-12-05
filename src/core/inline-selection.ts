@@ -41,6 +41,22 @@ export class InlineSelectionModule extends AbstractModule<InlineSelectionProtoco
         return findNearestParentTreeNode(this.editor.state, this.firstRange!.endContainer as HTMLElement);
     }
 
+    get asText(): string | null {
+        if (!this.isSomethingSelected) {
+            return null;
+        }
+
+        return this.firstRange!.toString();
+    }
+
+    get asTree(): GroupNode | null {
+        if (!this.isSomethingSelected) {
+            return null;
+        }
+
+        return null;
+    }
+
     updateSelection(selection: globalThis.Selection | null) {
         if (!selection) {
             this.resetSelection();

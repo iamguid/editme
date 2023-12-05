@@ -1,6 +1,6 @@
 import { EventBusProtocol } from "./event-bus";
 import { AbstractModule } from "./module";
-import { findById } from "./tree";
+import { extractText, findById, orderSetOfNodes } from "./tree";
 import { Point, Rect, isPointInRect, isRectContains, isRectIntersects, traceNodes } from "./utils";
 
 export const selectionChangedEvent = Symbol('selection_changed');
@@ -29,6 +29,10 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
 
     get selectedNodes() {
         return this._selectedBlocks;
+    }
+
+    get isSomethingSelected(): boolean {
+        return this._selectedBlocks.size > 0;
     }
 
     set nodesRects(rects: Map<string, Rect>) {
@@ -82,6 +86,12 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
 
     get isCrossBlockSelection(): boolean {
         return this.crossBlockSelection;
+    }
+
+    get asText(): string {
+        return orderSetOfNodes(this.editor.state, this.selectedNodes)
+            .map(node => extractText(node))
+            .join('\n');
     }
 
     isNodeSelected(id: string) {
