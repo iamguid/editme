@@ -46,18 +46,18 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
     
     get x(): number {
         if (this.currentPosition[0] < this.startPosition[0]) {
-            return this.currentPosition[0] - 1
+            return this.currentPosition[0]
         }
 
-        return this.startPosition[0] + 1;
+        return this.startPosition[0];
     }
 
     get y(): number {
         if (this.currentPosition[1] < this.startPosition[1]) {
-            return this.currentPosition[1] - 1
+            return this.currentPosition[1]
         }
 
-        return this.startPosition[1] + 1;
+        return this.startPosition[1];
     }
 
     get w(): number {
@@ -155,7 +155,7 @@ export class BlockSelectionModule extends AbstractModule<BlockSelectionProtocol>
             const isStartPositionNode = id === this.startPositionNodeId;
             const startPositionNode = findById(this.editor.state, this.startPositionNodeId!)!;
 
-            if (hasIntersection && !rectContainsSelection || (isStartPositionNode && startPositionNode.type !== 'group')) {
+            if (hasIntersection && (!rectContainsSelection || isStartPositionNode) || (isStartPositionNode && startPositionNode.type !== 'group')) {
                 result.add(id);
             }
         }

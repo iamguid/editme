@@ -113,13 +113,13 @@ export const getAbsoluteRect = (element: Node): Rect => {
     while(el) {
         if (el instanceof HTMLElement) {
             if (!isFound) {
-                w = el.clientWidth;
-                h = el.clientWidth;
+                w = el.offsetWidth;
+                h = el.offsetHeight;
                 isFound = true;
             }
 
-            x += el.offsetLeft ?? 0;
-            y += el.offsetTop ?? 0;
+            x += el.offsetLeft;
+            y += el.offsetTop;
             el = el.offsetParent;
         } else {
             el = el.parentElement;
